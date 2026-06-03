@@ -1,7 +1,10 @@
 package application;
 
+import course.Program;
+import course.ProgramService;
 import course.Section;
 import course.SectionService;
+import course.YearLevel;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -11,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -19,6 +24,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import user.SecretaryDAO;
@@ -28,12 +34,14 @@ public class AdminSectionsPanel extends JPanel implements ActionListener {
     private JLabel lblTitle, lblSubTitle;
     private JSeparator separator;
     private JTextField txtSearch;
+    private JComboBox<String> cmbFilter;
     private JButton btnSearch, btnAdd, btnEdit, btnDelete;
     private JTable sectionTable;
     private DefaultTableModel tableModel;
     private JScrollPane scrollPane;
 
     private final SectionService sectionService = new SectionService();
+    private final ProgramService programService = new ProgramService();
     private final SecretaryDAO secretaryDAO = new SecretaryDAO();
     private final List<Section> rowSections = new java.util.ArrayList<>();
 
@@ -57,7 +65,7 @@ public class AdminSectionsPanel extends JPanel implements ActionListener {
         add(separator);
 
         txtSearch = new JTextField();
-        txtSearch.setBounds(40, 100, 250, 36);
+        txtSearch.setBounds(40, 100, 200, 36);
         txtSearch.setFont(new Font("Arial", Font.PLAIN, 14));
         txtSearch.setForeground(new Color(60, 60, 60));
         txtSearch.setBackground(Color.WHITE);
@@ -67,8 +75,16 @@ public class AdminSectionsPanel extends JPanel implements ActionListener {
         ));
         add(txtSearch);
 
+        cmbFilter = new JComboBox<>(new String[]{"All Fields", "Section Code", "Program", "Year Level"});
+        cmbFilter.setBounds(250, 100, 140, 36);
+        cmbFilter.setFont(new Font("Arial", Font.PLAIN, 13));
+        cmbFilter.setBackground(Color.WHITE);
+        cmbFilter.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
+        cmbFilter.setFocusable(false);
+        add(cmbFilter);
+
         btnSearch = new JButton("Search");
-        btnSearch.setBounds(300, 100, 100, 36);
+        btnSearch.setBounds(400, 100, 100, 36);
         btnSearch.setFont(new Font("Arial", Font.PLAIN, 14));
         btnSearch.setForeground(Color.WHITE);
         btnSearch.setBackground(new Color(255, 140, 0));
@@ -158,6 +174,165 @@ public class AdminSectionsPanel extends JPanel implements ActionListener {
         }
     }
 
+    private Section getSelectedSection(){
+        int row = sectionTable.getSelectedRow();
+        if(row < 0 || row >= rowSections.size()){
+            return null;
+        }
+        return rowSections.get(row);
+    }
+
+    private void showSectionDialog(Section section, boolean isEdit){
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), isEdit ? "Edit Section" : "Add Section");
+        dialog.setModal(true);
+        dialog.setSize(420, 380);
+        dialog.setLocationRelativeTo(this);
+        dialog.setLayout(null);
+        dialog.getContentPane().setBackground(Color.WHITE);
+        dialog.setResizable(false);
+
+        JLabel accent = new JLabel("");
+        accent.setBounds(0, 0, 4, 380);
+        accent.setBackground(new Color(255, 140, 0));
+        accent.setOpaque(true);
+        dialog.add(accent);
+
+        JLabel lblHeader = new JLabel(isEdit ? "Edit Section" : "Add New Section");
+        lblHeader.setBounds(30, 20, 300, 30);
+        lblHeader.setFont(new Font("Arial", Font.BOLD, 18));
+        lblHeader.setForeground(new Color(60, 60, 60));
+        dialog.add(lblHeader);
+
+        JSeparator sep = new JSeparator();
+        sep.setBounds(30, 55, 360, 1);
+        sep.setForeground(new Color(220, 220, 220));
+        dialog.add(sep);
+
+        int y = 72, gap = 46;
+
+        JLabel lblCode = new JLabel("Section Code");
+        lblCode.setBounds(30, y, 120, 25);
+        lblCode.setFont(new Font("Arial", Font.BOLD, 13));
+        lblCode.setForeground(new Color(100, 100, 100));
+        dialog.add(lblCode);
+
+        JTextField txtCode = new JTextField(isEdit ? section.sectionCode() : "");
+        txtCode.setBounds(150, y, 230, 32);
+        txtCode.setFont(new Font("Arial", Font.PLAIN, 13));
+        txtCode.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
+            BorderFactory.createEmptyBorder(4, 8, 4, 8)
+        ));
+        dialog.add(txtCode);
+        y += gap;
+
+        JLabel lblProgram = new JLabel("Program");
+        lblProgram.setBounds(30, y, 120, 25);
+        lblProgram.setFont(new Font("Arial", Font.BOLD, 13));
+        lblProgram.setForeground(new Color(100, 100, 100));
+        dialog.add(lblProgram);
+
+        JComboBox<String> cmbProgram = new JComboBox<>();
+        List<Program> programs = programService.getAllPrograms();
+        for(Program p : programs){
+            cmbProgram.addItem(p.programName());
+        }
+        cmbProgram.setBounds(150, y, 230, 32);
+        cmbProgram.setFont(new Font("Arial", Font.PLAIN, 13));
+        cmbProgram.setBackground(Color.WHITE);
+        cmbProgram.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
+        cmbProgram.setFocusable(false);
+        if(isEdit){
+            cmbProgram.setSelectedItem(section.program().programName());
+        }
+        dialog.add(cmbProgram);
+        y += gap;
+
+        JLabel lblYear = new JLabel("Year Level");
+        lblYear.setBounds(30, y, 120, 25);
+        lblYear.setFont(new Font("Arial", Font.BOLD, 13));
+        lblYear.setForeground(new Color(100, 100, 100));
+        dialog.add(lblYear);
+
+        JComboBox<String> cmbYear = new JComboBox<>(new String[]{"1st Year", "2nd Year", "3rd Year", "4th Year"});
+        cmbYear.setBounds(150, y, 230, 32);
+        cmbYear.setFont(new Font("Arial", Font.PLAIN, 13));
+        cmbYear.setBackground(Color.WHITE);
+        cmbYear.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
+        cmbYear.setFocusable(false);
+        if(isEdit){
+            cmbYear.setSelectedItem(section.yearLevel().getYearLevelName());
+        }
+        dialog.add(cmbYear);
+        y += gap + 20;
+
+        JButton btnCancel = new JButton("Cancel");
+        btnCancel.setBounds(180, y, 100, 36);
+        btnCancel.setFont(new Font("Arial", Font.PLAIN, 14));
+        btnCancel.setForeground(new Color(100, 100, 100));
+        btnCancel.setBackground(Color.WHITE);
+        btnCancel.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
+        btnCancel.setFocusPainted(false);
+        btnCancel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnCancel.addActionListener(ev -> dialog.dispose());
+        dialog.add(btnCancel);
+
+        JButton btnSaveDialog = new JButton(isEdit ? "Update" : "Create");
+        btnSaveDialog.setBounds(290, y, 100, 36);
+        btnSaveDialog.setFont(new Font("Arial", Font.PLAIN, 14));
+        btnSaveDialog.setForeground(Color.WHITE);
+        btnSaveDialog.setBackground(new Color(255, 140, 0));
+        btnSaveDialog.setBorder(null);
+        btnSaveDialog.setFocusPainted(false);
+        btnSaveDialog.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnSaveDialog.addActionListener(ev -> {
+            String code = txtCode.getText().trim();
+            if(code.isEmpty()){
+                JOptionPane.showMessageDialog(dialog, "Section code is required.", "Validation", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            String programName = cmbProgram.getSelectedItem().toString();
+            String yearName = cmbYear.getSelectedItem().toString();
+
+            Program program = programService.getAllPrograms().stream()
+                .filter(p -> p.programName().equals(programName)).findFirst().orElse(null);
+            YearLevel yearLevel = switch (yearName) {
+                case "1st Year" -> YearLevel.FIRST_YEAR;
+                case "2nd Year" -> YearLevel.SECOND_YEAR;
+                case "3rd Year" -> YearLevel.THIRD_YEAR;
+                case "4th Year" -> YearLevel.FOURTH_YEAR;
+                default -> YearLevel.FIRST_YEAR;
+            };
+
+            if(program == null){
+                JOptionPane.showMessageDialog(dialog, "Invalid program selected.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            boolean success;
+            if(isEdit){
+                Section updated = new Section(section.sectionId(), program, yearLevel, code);
+                success = sectionService.updateSection(updated);
+            } else {
+                Section created = sectionService.createSection(program, yearLevel, code);
+                success = created != null && created.sectionId() > 0;
+            }
+
+            if(success){
+                JOptionPane.showMessageDialog(dialog,
+                    "Section " + (isEdit ? "updated" : "created") + " successfully!",
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+                dialog.dispose();
+                loadSections();
+            } else {
+                JOptionPane.showMessageDialog(dialog, "Failed to save section. Section code may already exist.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        dialog.add(btnSaveDialog);
+
+        dialog.setVisible(true);
+    }
+
     @Override
     public void setBounds(int x, int y, int width, int height){
         super.setBounds(x, y, width, height);
@@ -189,19 +364,65 @@ public class AdminSectionsPanel extends JPanel implements ActionListener {
         tableModel.addRow(new Object[]{code, program, yearLevel, students});
     }
 
+    private void performSearch(){
+        String query = txtSearch.getText().trim().toLowerCase();
+        String filter = cmbFilter.getSelectedItem().toString();
+        if(query.isEmpty()){
+            loadSections();
+            return;
+        }
+        tableModel.setRowCount(0);
+        for(Section s : rowSections){
+            boolean match = false;
+            switch(filter){
+                case "Section Code" -> match = s.sectionCode().toLowerCase().contains(query);
+                case "Program" -> match = s.program().programName().toLowerCase().contains(query);
+                case "Year Level" -> match = s.yearLevel().getYearLevelName().toLowerCase().contains(query);
+                default -> match = s.sectionCode().toLowerCase().contains(query)
+                    || s.program().programName().toLowerCase().contains(query)
+                    || s.yearLevel().getYearLevelName().toLowerCase().contains(query);
+            }
+            if(match){
+                int count = secretaryDAO.findStudentsBySectionId(s.sectionId()).size();
+                addSectionRow(s.sectionCode(), s.program().programName(), s.yearLevel().getYearLevelName(), String.valueOf(count));
+            }
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == btnSearch){
-            // Search sections
+            performSearch();
         }
         if(e.getSource() == btnAdd){
-            JOptionPane.showMessageDialog(this, "Add Section dialog coming soon.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            showSectionDialog(null, false);
         }
         if(e.getSource() == btnEdit){
-            JOptionPane.showMessageDialog(this, "Edit selected section.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            Section selected = getSelectedSection();
+            if(selected == null){
+                JOptionPane.showMessageDialog(this, "Please select a section from the table.", "No Selection", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            showSectionDialog(selected, true);
         }
         if(e.getSource() == btnDelete){
-            JOptionPane.showMessageDialog(this, "Delete selected section.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            Section selected = getSelectedSection();
+            if(selected == null){
+                JOptionPane.showMessageDialog(this, "Please select a section from the table.", "No Selection", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            int confirm = JOptionPane.showConfirmDialog(this,
+                "Delete section: " + selected.sectionCode() + "?\n\nThis action cannot be undone.",
+                "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if(confirm == JOptionPane.YES_OPTION){
+                boolean success = sectionService.deleteSection(selected.sectionId());
+                if(success){
+                    JOptionPane.showMessageDialog(this, "Section deleted successfully.", "Deleted", JOptionPane.INFORMATION_MESSAGE);
+                    loadSections();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to delete section. Section may be referenced by other records.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         }
     }
 }

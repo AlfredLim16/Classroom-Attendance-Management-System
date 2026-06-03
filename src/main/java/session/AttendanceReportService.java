@@ -86,13 +86,14 @@ public class AttendanceReportService {
     public Map<String, Integer> getDailyAttendanceStats(int sessionId){
         List<Attendance> attendances = attendanceDAO.findBySessionId(sessionId);
         Map<String, Integer> stats = new HashMap<>();
-        stats.put("PRESENT", 0);
-        stats.put("LATE", 0);
-        stats.put("ABSENT", 0);
-        stats.put("EXCUSED", 0);
+        stats.put("Present", 0);
+        stats.put("Late", 0);
+        stats.put("Absent", 0);
+        stats.put("Excused", 0);
 
         for(Attendance a : attendances){
-            stats.put(a.status().getStatusName(), stats.get(a.status().getStatusName()) + 1);
+            String statusName = a.status().getStatusName();
+            stats.put(statusName, stats.getOrDefault(statusName, 0) + 1);
         }
         return stats;
     }

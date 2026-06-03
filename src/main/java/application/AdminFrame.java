@@ -20,7 +20,7 @@ public class AdminFrame extends JFrame implements ActionListener {
 
     private JLabel titleLabel;
     private JButton closeBtn;
-    private JButton btnDashboard, btnUsers, btnCourses, btnSections, btnProfessors, btnStudents, btnReports, btnSettings;
+    private JButton btnDashboard, btnUsers, btnCourses, btnSections, btnProfessors, btnStudents, btnReports, btnSettings, btnLogout;
     private JPanel currentPanel;
     private JPanel contentContainer;
 
@@ -99,6 +99,7 @@ public class AdminFrame extends JFrame implements ActionListener {
         btnStudents = navButton("Students", startX + (buttonWidth + gap) * 5 + 10, buttonY, buttonWidth, buttonHeight);
         btnReports = navButton("Reports", startX + (buttonWidth + gap) * 6 + 10, buttonY, buttonWidth, buttonHeight);
         btnSettings = navButton("Settings", startX + (buttonWidth + gap) * 7 + 10, buttonY, buttonWidth, buttonHeight);
+        btnLogout = navButton("Logout", startX + (buttonWidth + gap) * 8 + 10, buttonY, buttonWidth, buttonHeight);
 
         titleBar.add(btnDashboard);
         titleBar.add(btnUsers);
@@ -108,6 +109,7 @@ public class AdminFrame extends JFrame implements ActionListener {
         titleBar.add(btnStudents);
         titleBar.add(btnReports);
         titleBar.add(btnSettings);
+        titleBar.add(btnLogout);
 
         add(titleBar);
     }
@@ -173,6 +175,11 @@ public class AdminFrame extends JFrame implements ActionListener {
         }
         if(e.getSource() == btnSettings){
             showPanel(new AdminSettingsPanel());
+        }
+        if(e.getSource() == btnLogout){
+            dispose();
+            LoginFrame loginFrame = new LoginFrame();
+            loginFrame.setVisible(true);
         }
     }
 }

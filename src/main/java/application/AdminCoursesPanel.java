@@ -4,7 +4,9 @@ import course.Course;
 import course.CourseService;
 import course.Program;
 import course.ProgramService;
+import course.Semester;
 import course.SemesterService;
+import course.YearLevel;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -33,6 +35,7 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
     private JLabel lblTitle, lblSubTitle;
     private JSeparator separator;
     private JTextField txtSearch;
+    private JComboBox<String> cmbFilter;
     private JButton btnSearch, btnAdd, btnEdit, btnDelete;
     private JTable courseTable;
     private DefaultTableModel tableModel;
@@ -63,7 +66,7 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
         add(separator);
 
         txtSearch = new JTextField();
-        txtSearch.setBounds(40, 100, 250, 36);
+        txtSearch.setBounds(40, 100, 200, 36);
         txtSearch.setFont(new Font("Arial", Font.PLAIN, 14));
         txtSearch.setForeground(new Color(60, 60, 60));
         txtSearch.setBackground(Color.WHITE);
@@ -73,8 +76,16 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
         ));
         add(txtSearch);
 
+        cmbFilter = new JComboBox<>(new String[]{"All Fields", "Course Code", "Course Name", "Program", "Units", "Year Level", "Semester"});
+        cmbFilter.setBounds(250, 100, 140, 36);
+        cmbFilter.setFont(new Font("Arial", Font.PLAIN, 13));
+        cmbFilter.setBackground(Color.WHITE);
+        cmbFilter.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
+        cmbFilter.setFocusable(false);
+        add(cmbFilter);
+
         btnSearch = new JButton("Search");
-        btnSearch.setBounds(300, 100, 100, 36);
+        btnSearch.setBounds(400, 100, 100, 36);
         btnSearch.setFont(new Font("Arial", Font.PLAIN, 14));
         btnSearch.setForeground(Color.WHITE);
         btnSearch.setBackground(new Color(255, 140, 0));
@@ -176,14 +187,14 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
     private void showCourseDialog(Course course, boolean isEdit){
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), isEdit ? "Edit Course" : "Add Course");
         dialog.setModal(true);
-        dialog.setSize(480, 450);
+        dialog.setSize(480, 500);
         dialog.setLocationRelativeTo(this);
         dialog.setLayout(null);
         dialog.getContentPane().setBackground(Color.WHITE);
         dialog.setResizable(false);
 
         JLabel accent = new JLabel("");
-        accent.setBounds(0, 0, 4, 450);
+        accent.setBounds(0, 0, 4, 500);
         accent.setBackground(new Color(255, 140, 0));
         accent.setOpaque(true);
         dialog.add(accent);
@@ -201,7 +212,6 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
 
         int y = 72, gap = 46;
 
-        // Course Code
         JLabel lblCode = new JLabel("Course Code");
         lblCode.setBounds(30, y, 120, 25);
         lblCode.setFont(new Font("Arial", Font.BOLD, 13));
@@ -218,7 +228,6 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
         dialog.add(txtCode);
         y += gap;
 
-        // Course Name
         JLabel lblName = new JLabel("Course Name");
         lblName.setBounds(30, y, 120, 25);
         lblName.setFont(new Font("Arial", Font.BOLD, 13));
@@ -235,7 +244,6 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
         dialog.add(txtName);
         y += gap;
 
-        // Program
         JLabel lblProgram = new JLabel("Program");
         lblProgram.setBounds(30, y, 120, 25);
         lblProgram.setFont(new Font("Arial", Font.BOLD, 13));
@@ -258,7 +266,6 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
         dialog.add(cmbProgram);
         y += gap;
 
-        // Units
         JLabel lblUnits = new JLabel("Units");
         lblUnits.setBounds(30, y, 120, 25);
         lblUnits.setFont(new Font("Arial", Font.BOLD, 13));
@@ -274,7 +281,6 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
         ));
         dialog.add(txtUnits);
 
-        // Year Level
         JLabel lblYear = new JLabel("Year Level");
         lblYear.setBounds(250, y, 80, 25);
         lblYear.setFont(new Font("Arial", Font.BOLD, 13));
@@ -293,9 +299,30 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
         dialog.add(cmbYear);
         y += gap;
 
-        // Cancel
+        JLabel lblSemester = new JLabel("Semester");
+        lblSemester.setBounds(30, y, 120, 25);
+        lblSemester.setFont(new Font("Arial", Font.BOLD, 13));
+        lblSemester.setForeground(new Color(100, 100, 100));
+        dialog.add(lblSemester);
+
+        JComboBox<String> cmbSemester = new JComboBox<>();
+        List<Semester> semesters = semesterService.getAllSemesters();
+        for(Semester s : semesters){
+            cmbSemester.addItem(s.semesterName());
+        }
+        cmbSemester.setBounds(150, y, 280, 32);
+        cmbSemester.setFont(new Font("Arial", Font.PLAIN, 13));
+        cmbSemester.setBackground(Color.WHITE);
+        cmbSemester.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
+        cmbSemester.setFocusable(false);
+        if(isEdit){
+            cmbSemester.setSelectedItem(course.semester().semesterName());
+        }
+        dialog.add(cmbSemester);
+        y += gap + 10;
+
         JButton btnCancel = new JButton("Cancel");
-        btnCancel.setBounds(230, 360, 100, 36);
+        btnCancel.setBounds(230, y, 100, 36);
         btnCancel.setFont(new Font("Arial", Font.PLAIN, 14));
         btnCancel.setForeground(new Color(100, 100, 100));
         btnCancel.setBackground(Color.WHITE);
@@ -305,9 +332,8 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
         btnCancel.addActionListener(ev -> dialog.dispose());
         dialog.add(btnCancel);
 
-        // Save
         JButton btnSaveDialog = new JButton(isEdit ? "Update" : "Create");
-        btnSaveDialog.setBounds(340, 360, 100, 36);
+        btnSaveDialog.setBounds(340, y, 100, 36);
         btnSaveDialog.setFont(new Font("Arial", Font.PLAIN, 14));
         btnSaveDialog.setForeground(Color.WHITE);
         btnSaveDialog.setBackground(new Color(255, 140, 0));
@@ -323,12 +349,53 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
             }
             try{
                 int units = Integer.parseInt(txtUnits.getText().trim());
-                JOptionPane.showMessageDialog(dialog,
-                    "Course " + (isEdit ? "updated" : "created") + " successfully!\n\n"
-                    + "Code: " + code + "\nName: " + name + "\nUnits: " + units,
-                    "Success", JOptionPane.INFORMATION_MESSAGE);
-                dialog.dispose();
-                loadCourses();
+                String programName = cmbProgram.getSelectedItem().toString();
+                String yearName = cmbYear.getSelectedItem().toString();
+                String semName = cmbSemester.getSelectedItem().toString();
+
+                Program program = programService.getAllPrograms().stream()
+                    .filter(p -> p.programName().equals(programName)).findFirst().orElse(null);
+                YearLevel yearLevel = switch (yearName) {
+                    case "1st Year" -> YearLevel.FIRST_YEAR;
+                    case "2nd Year" -> YearLevel.SECOND_YEAR;
+                    case "3rd Year" -> YearLevel.THIRD_YEAR;
+                    case "4th Year" -> YearLevel.FOURTH_YEAR;
+                    default -> YearLevel.FIRST_YEAR;
+                };
+                Semester semester = semesterService.getAllSemesters().stream()
+                    .filter(s -> s.semesterName().equals(semName)).findFirst().orElse(null);
+
+                if(program == null || semester == null){
+                    JOptionPane.showMessageDialog(dialog, "Invalid program or semester selected.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                boolean success;
+                if(isEdit){
+                    Course updated = Course.builder()
+                        .courseId(course.courseId())
+                        .program(program)
+                        .courseCode(code)
+                        .courseName(name)
+                        .units((byte) units)
+                        .semester(semester)
+                        .yearLevel(yearLevel)
+                        .build();
+                    success = courseService.updateCourse(updated);
+                } else {
+                    Course created = courseService.createCourse(program, code, name, (byte) units, semester, yearLevel);
+                    success = created != null && created.courseId() > 0;
+                }
+
+                if(success){
+                    JOptionPane.showMessageDialog(dialog,
+                        "Course " + (isEdit ? "updated" : "created") + " successfully!",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                    dialog.dispose();
+                    loadCourses();
+                } else {
+                    JOptionPane.showMessageDialog(dialog, "Failed to save course. Course code may already exist.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }catch(NumberFormatException ex){
                 JOptionPane.showMessageDialog(dialog, "Units must be a valid number.", "Validation", JOptionPane.WARNING_MESSAGE);
             }
@@ -369,21 +436,41 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
         tableModel.addRow(new Object[]{code, name, program, units, year, semester});
     }
 
+    private void performSearch(){
+        String query = txtSearch.getText().trim().toLowerCase();
+        String filter = cmbFilter.getSelectedItem().toString();
+        if(query.isEmpty()){
+            loadCourses();
+            return;
+        }
+        tableModel.setRowCount(0);
+        for(Course c : rowCourses){
+            boolean match = false;
+            switch(filter){
+                case "Course Code" -> match = c.courseCode().toLowerCase().contains(query);
+                case "Course Name" -> match = c.courseName().toLowerCase().contains(query);
+                case "Program" -> match = c.program().programName().toLowerCase().contains(query);
+                case "Units" -> match = String.valueOf(c.units()).contains(query);
+                case "Year Level" -> match = c.yearLevel().getYearLevelName().toLowerCase().contains(query);
+                case "Semester" -> match = c.semester().semesterName().toLowerCase().contains(query);
+                default -> match = c.courseCode().toLowerCase().contains(query)
+                    || c.courseName().toLowerCase().contains(query)
+                    || c.program().programName().toLowerCase().contains(query)
+                    || String.valueOf(c.units()).contains(query)
+                    || c.yearLevel().getYearLevelName().toLowerCase().contains(query)
+                    || c.semester().semesterName().toLowerCase().contains(query);
+            }
+            if(match){
+                addCourseRow(c.courseCode(), c.courseName(), c.program().programName(),
+                    String.valueOf(c.units()), c.yearLevel().getYearLevelName(), c.semester().semesterName());
+            }
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == btnSearch){
-            String query = txtSearch.getText().trim().toLowerCase();
-            if(query.isEmpty()){
-                loadCourses();
-                return;
-            }
-            tableModel.setRowCount(0);
-            for(Course c : rowCourses){
-                if(c.courseCode().toLowerCase().contains(query) || c.courseName().toLowerCase().contains(query)){
-                    addCourseRow(c.courseCode(), c.courseName(), c.program().programName(),
-                        String.valueOf(c.units()), c.yearLevel().getYearLevelName(), c.semester().semesterName());
-                }
-            }
+            performSearch();
         }
         if(e.getSource() == btnAdd){
             showCourseDialog(null, false);
@@ -406,9 +493,13 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
                 "Delete course: " + selected.courseCode() + " - " + selected.courseName() + "?\n\nThis action cannot be undone.",
                 "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if(confirm == JOptionPane.YES_OPTION){
-                courseService.deleteCourse(selected.courseId());
-                JOptionPane.showMessageDialog(this, "Course deleted successfully.", "Deleted", JOptionPane.INFORMATION_MESSAGE);
-                loadCourses();
+                boolean success = courseService.deleteCourse(selected.courseId());
+                if(success){
+                    JOptionPane.showMessageDialog(this, "Course deleted successfully.", "Deleted", JOptionPane.INFORMATION_MESSAGE);
+                    loadCourses();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to delete course. Course may be referenced by other records.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
     }

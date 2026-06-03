@@ -1,5 +1,7 @@
 package application;
 
+import course.CourseService;
+import course.SectionService;
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.BorderFactory;
@@ -23,6 +25,8 @@ public class AdminDashboardPanel extends JPanel {
     private final StudentService studentService = new StudentService();
     private final ProfessorService professorService = new ProfessorService();
     private final SecretaryService secretaryService = new SecretaryService();
+    private final CourseService courseService = new CourseService();
+    private final SectionService sectionService = new SectionService();
 
     public AdminDashboardPanel(){
         setLayout(null);
@@ -72,13 +76,15 @@ public class AdminDashboardPanel extends JPanel {
         int students = studentService.getAllStudents().size();
         int professors = professorService.getAllProfessors().size();
         int secretaries = secretaryService.getAllSecretaries().size();
+        int courses = courseService.getAllCourses().size();
+        int sections = sectionService.getAllSections().size();
 
         updateCardValue(0, String.valueOf(totalUsers));
         updateCardValue(1, String.valueOf(students));
         updateCardValue(2, String.valueOf(professors));
         updateCardValue(3, String.valueOf(secretaries));
-        updateCardValue(4, "30");
-        updateCardValue(5, "24");
+        updateCardValue(4, String.valueOf(courses));
+        updateCardValue(5, String.valueOf(sections));
     }
 
     private JPanel DashboardCard(String title, String value, Color accentColor){

@@ -200,12 +200,14 @@ public class LoginFrame extends JFrame implements ActionListener {
                         case STUDENT -> {
                             StudentFrame studentFrame = new StudentFrame();
                             studentFrame.setCurrentUser(user);
+
                         }
                         case PROFESSOR -> {
                             ProfessorFrame professorFrame = new ProfessorFrame();
                             professorFrame.setCurrentUser(user);
                         }
                         case ADMIN -> {
+                            dispose();
                             AdminFrame adminFrame = new AdminFrame();
                             adminFrame.setCurrentUser(user);
                         }
