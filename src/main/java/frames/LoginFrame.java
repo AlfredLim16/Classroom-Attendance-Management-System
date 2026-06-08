@@ -29,15 +29,9 @@ public class LoginFrame extends JFrame implements ActionListener {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JCheckBox showPasswordCheck;
-    private JButton closeBtn, loginBtn, registerBtn;
+    private JButton closeBtn, loginBtn;
     private JPanel titleBar;
     private final AuthService authService = new AuthService();
-
-    private static final int FORM_WIDTH = 300;
-    private static final int FIELD_H = 40;
-    private static final int LABEL_H = 20;
-    private static final int BTN_H = 40;
-    private static final int TITLEBAR_H = 32;
 
     public LoginFrame(){
         ConfigureWindow();
@@ -61,7 +55,7 @@ public class LoginFrame extends JFrame implements ActionListener {
 
     private void TitleBar(){
         titleBar = new JPanel();
-        titleBar.setBounds(0, 0, getWidth(), TITLEBAR_H);
+        titleBar.setBounds(0, 0, getWidth(), 32);
         titleBar.setBackground(Color.WHITE);
         titleBar.setLayout(null);
 
@@ -74,7 +68,7 @@ public class LoginFrame extends JFrame implements ActionListener {
         titleLabel = new JLabel("Orange - Login");
         titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         titleLabel.setForeground(new Color(60, 60, 60));
-        titleLabel.setBounds(40, 0, 200, TITLEBAR_H + 8);
+        titleLabel.setBounds(40, 0, 200, 40);
         titleBar.add(titleLabel);
 
         ImageIcon closeRaw = new ImageIcon(getClass().getResource("/icons/close.png"));
@@ -144,16 +138,6 @@ public class LoginFrame extends JFrame implements ActionListener {
         loginBtn.addActionListener(this);
         add(loginBtn);
 
-        registerBtn = new JButton("Create Account");
-        registerBtn.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        registerBtn.setForeground(new Color(100, 100, 100));
-        registerBtn.setBackground(Color.WHITE);
-        registerBtn.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
-        registerBtn.setFocusPainted(false);
-        registerBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        registerBtn.addActionListener(this);
-        add(registerBtn);
-
         repositionComponents(getWidth(), getHeight());
         revalidate();
         repaint();
@@ -161,7 +145,7 @@ public class LoginFrame extends JFrame implements ActionListener {
 
     private void repositionComponents(int w, int h){
         if(titleBar != null){
-            titleBar.setBounds(0, 0, w, TITLEBAR_H);
+            titleBar.setBounds(0, 0, w, 32);
         }
         if(closeBtn != null){
             closeBtn.setBounds(w - 40, 8, 28, 24);
@@ -171,31 +155,28 @@ public class LoginFrame extends JFrame implements ActionListener {
             return;
         }
 
-        int formX = (w - FORM_WIDTH) / 2;
-        int blockH = LABEL_H + FIELD_H + 20 + LABEL_H + FIELD_H + 10 + LABEL_H + 20 + BTN_H + 12 + BTN_H;
-        int contentH = h - TITLEBAR_H;
-        int startY = TITLEBAR_H + (contentH - blockH) / 2;
+        int formX = (w - 300) / 2;
+        int blockH = 20 + 40 + 20 + 20 + 40 + 10 + 20 + 20 + 40 + 12 + 40;
+        int contentH = h - 32;
+        int startY = 32 + (contentH - blockH) / 2;
         int y = startY;
 
-        userLabel.setBounds(formX, y, FORM_WIDTH, LABEL_H);
-        y += LABEL_H + 5;
+        userLabel.setBounds(formX, y, 300, 20);
+        y += 20 + 5;
 
-        usernameField.setBounds(formX, y, FORM_WIDTH, FIELD_H);
-        y += FIELD_H + 20;
+        usernameField.setBounds(formX, y, 300, 40);
+        y += 40 + 20;
 
-        passLabel.setBounds(formX, y, FORM_WIDTH, LABEL_H);
-        y += LABEL_H + 5;
+        passLabel.setBounds(formX, y, 300, 20);
+        y += 20 + 5;
 
-        passwordField.setBounds(formX, y, FORM_WIDTH, FIELD_H);
-        y += FIELD_H + 10;
+        passwordField.setBounds(formX, y, 300, 40);
+        y += 40 + 10;
 
-        showPasswordCheck.setBounds(formX, y, FORM_WIDTH, LABEL_H);
-        y += LABEL_H + 20;
+        showPasswordCheck.setBounds(formX, y, 300, 20);
+        y += 20 + 20;
 
-        loginBtn.setBounds(formX, y, FORM_WIDTH, BTN_H);
-        y += BTN_H + 12;
-
-        registerBtn.setBounds(formX, y, FORM_WIDTH, BTN_H);
+        loginBtn.setBounds(formX, y, 300, 40);
     }
 
     @Override

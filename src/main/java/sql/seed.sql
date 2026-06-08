@@ -55,13 +55,11 @@ INSERT INTO Section (programId, yearLevelId, sectionCode) VALUES
 (3, 3, 'BSCpE 3-1'), (3, 3, 'BSCpE 3-2'),
 (3, 4, 'BSCpE 4-1'), (3, 4, 'BSCpE 4-2');
 
--- ============================================================
 -- USERS
 -- userId 1 = admin
 -- userId 2-8  = professors (7 professors)
 -- userId 9-40 = students (32 students)
 -- userId 41-43 = secretaries (3 secretaries, reuse student accounts)
--- ============================================================
 
 -- Admin
 INSERT INTO User (userName, userPassword, roleId) VALUES
@@ -118,8 +116,7 @@ INSERT INTO User (userName, userPassword, roleId) VALUES
 ('sec.melchora.aquino',   'sec123', 4),   -- userId 42
 ('sec.marcelo.delpilar',  'sec123', 4);   -- userId 43
 
--- ============================================================
--- PROFESSORS
+-- Professors
 INSERT INTO Professor (userId, firstName, middleName, lastName, professorTypeId) VALUES
 (2, 'Juan',    'M.', 'Dela Cruz', 2),   -- professorId 1
 (3, 'Maria',   'L.', 'Santos',    3),   -- professorId 2
@@ -129,8 +126,7 @@ INSERT INTO Professor (userId, firstName, middleName, lastName, professorTypeId)
 (7, 'Carmen',  'D.', 'Torres',    2),   -- professorId 6
 (8, 'Jose',    'A.', 'Mendoza',   3);   -- professorId 7
 
--- ============================================================
--- STUDENTS
+-- Students
 -- BSIT 1-1 (sectionId 1)
 INSERT INTO Student (userId, studentNumber, firstName, middleName, lastName, programId, yearLevelId, sectionId) VALUES
 (9,  '2025-0001-IT-1', 'Andres',    'A.', 'Bonifacio', 1, 1, 1),
@@ -187,61 +183,56 @@ INSERT INTO Student (userId, studentNumber, firstName, middleName, lastName, pro
 (39, '2025-0031-CE-2', 'Eddie',     'T.', 'Villanueva', 3, 1, 18),
 (40, '2025-0032-CE-2', 'Loren',     'B.', 'Legarda',    3, 1, 18);
 
--- ============================================================
--- SECRETARIES
--- studentId 1 = Andres Bonifacio  -> BSIT 1-1
--- studentId 5 = Melchora Aquino   -> BSIT 1-2
--- studentId 9 = Marcelo Del Pilar -> BSIT 2-1
--- ============================================================
 
+-- SECRETARIES
+-- studentId 1 = Andres Bonifacio  BSIT 1-1
+-- studentId 5 = Melchora Aquino   BSIT 1-2
+-- studentId 9 = Marcelo Del Pilar BSIT 2-1
 INSERT INTO Secretary (studentId, sectionId) VALUES
 (1, 1),
 (5, 2),
 (9, 3);
 
--- ============================================================
--- COURSES
+
 -- BSIT Courses
 INSERT INTO Course (programId, courseCode, courseName, units, semesterId, yearLevelId) VALUES
-(1, 'IT101', 'Introduction to Programming',     3, 1, 1),
-(1, 'IT102', 'Database Management Systems',     3, 1, 1),
-(1, 'IT103', 'Web Development',                 3, 1, 1),
-(1, 'IT201', 'Object-Oriented Programming',     3, 1, 2),
-(1, 'IT202', 'Data Structures and Algorithms',  3, 1, 2),
-(1, 'IT203', 'Computer Networks',               3, 1, 2),
-(1, 'IT301', 'Software Engineering',            3, 1, 3),
-(1, 'IT302', 'Mobile Application Development',  3, 1, 3),
-(1, 'IT401', 'Capstone Project 1',              3, 1, 4),
+(1, 'IT101', 'Introduction to Programming', 3, 1, 1),
+(1, 'IT102', 'Database Management Systems', 3, 1, 1),
+(1, 'IT103', 'Web Development', 3, 1, 1),
+(1, 'IT201', 'Object-Oriented Programming', 3, 1, 2),
+(1, 'IT202', 'Data Structures and Algorithms', 3, 1, 2),
+(1, 'IT203', 'Computer Networks', 3, 1, 2),
+(1, 'IT301', 'Software Engineering', 3, 1, 3),
+(1, 'IT302', 'Mobile Application Development', 3, 1, 3),
+(1, 'IT401', 'Capstone Project 1', 3, 1, 4),
 (1, 'IT402', 'Information Assurance and Security', 3, 1, 4);
 
 -- BSIE Courses
 INSERT INTO Course (programId, courseCode, courseName, units, semesterId, yearLevelId) VALUES
-(2, 'IE101', 'Engineering Mechanics',    3, 1, 1),
+(2, 'IE101', 'Engineering Mechanics', 3, 1, 1),
 (2, 'IE102', 'Work Analysis and Design', 3, 1, 1),
-(2, 'IE103', 'Engineering Drawing',      3, 1, 1),
-(2, 'IE201', 'Operations Research 1',   3, 1, 2),
-(2, 'IE202', 'Ergonomics',              3, 1, 2),
-(2, 'IE203', 'Quality Control',         3, 1, 2),
+(2, 'IE103', 'Engineering Drawing', 3, 1, 1),
+(2, 'IE201', 'Operations Research 1', 3, 1, 2),
+(2, 'IE202', 'Ergonomics', 3, 1, 2),
+(2, 'IE203', 'Quality Control', 3, 1, 2),
 (2, 'IE301', 'Supply Chain Management', 3, 1, 3),
-(2, 'IE302', 'Project Management',      3, 1, 3),
-(2, 'IE401', 'Thesis 1',               3, 1, 4),
+(2, 'IE302', 'Project Management', 3, 1, 3),
+(2, 'IE401', 'Thesis 1', 3, 1, 4),
 (2, 'IE402', 'Industrial Plant Design', 3, 1, 4);
 
 -- BSCpE Courses
 INSERT INTO Course (programId, courseCode, courseName, units, semesterId, yearLevelId) VALUES
-(3, 'CpE101', 'Computer Fundamentals',         3, 1, 1),
-(3, 'CpE102', 'Programming Logic and Design',  3, 1, 1),
-(3, 'CpE103', 'Discrete Mathematics',          3, 1, 1),
-(3, 'CpE201', 'Digital Logic Design',          3, 1, 2),
-(3, 'CpE202', 'Microprocessors',               3, 1, 2),
-(3, 'CpE203', 'Data Communications',           3, 1, 2),
-(3, 'CpE301', 'Embedded Systems',              3, 1, 3),
-(3, 'CpE302', 'Computer Architecture',         3, 1, 3),
-(3, 'CpE401', 'Thesis 1',                      3, 1, 4),
+(3, 'CpE101', 'Computer Fundamentals', 3, 1, 1),
+(3, 'CpE102', 'Programming Logic and Design', 3, 1, 1),
+(3, 'CpE103', 'Discrete Mathematics', 3, 1, 1),
+(3, 'CpE201', 'Digital Logic Design', 3, 1, 2),
+(3, 'CpE202', 'Microprocessors', 3, 1, 2),
+(3, 'CpE203', 'Data Communications', 3, 1, 2),
+(3, 'CpE301', 'Embedded Systems', 3, 1, 3),
+(3, 'CpE302', 'Computer Architecture', 3, 1, 3),
+(3, 'CpE401', 'Thesis 1', 3, 1, 4),
 (3, 'CpE402', 'Advanced Computer Engineering', 3, 1, 4);
 
--- ============================================================
--- SCHOOL EVENTS
 INSERT INTO SchoolEvent (eventName, eventDate) VALUES
 ('University Week',  '2025-09-15'),
 ('Christmas Party',  '2025-12-18'),
@@ -249,58 +240,53 @@ INSERT INTO SchoolEvent (eventName, eventDate) VALUES
 ('Workshop',         '2025-10-10'),
 ('Academic Week',    '2025-11-05');
 
--- ============================================================
--- PROFESSOR-COURSE ASSIGNMENTS
 INSERT INTO ProfessorCourse (professorId, courseId, semesterId) VALUES
-(1, 1,  1),   -- Dela Cruz  -> IT101
-(1, 2,  1),   -- Dela Cruz  -> IT102
-(1, 4,  1),   -- Dela Cruz  -> IT201
-(2, 11, 1),   -- Santos     -> IE101
-(2, 12, 1),   -- Santos     -> IE102
-(3, 21, 1),   -- Reyes      -> CpE101
-(3, 22, 1),   -- Reyes      -> CpE102
-(4, 3,  1),   -- Garcia     -> IT103
-(4, 5,  1),   -- Garcia     -> IT202
-(5, 13, 1),   -- Jose       -> IE103
-(5, 14, 1),   -- Jose       -> IE201
-(6, 23, 1),   -- Torres     -> CpE103
-(6, 24, 1),   -- Torres     -> CpE201
-(7, 6,  1),   -- Mendoza    -> IT203
-(7, 25, 1);   -- Mendoza    -> CpE202
+(1, 1,  1),   -- Dela Cruz IT101
+(1, 2,  1),   -- Dela Cruz IT102
+(1, 4,  1),   -- Dela Cruz IT201
+(2, 11, 1),   -- Santos IE101
+(2, 12, 1),   -- Santos IE102
+(3, 21, 1),   -- Reyes CpE101
+(3, 22, 1),   -- Reyes CpE102
+(4, 3,  1),   -- Garcia IT103
+(4, 5,  1),   -- Garcia IT202
+(5, 13, 1),   -- Jose IE103
+(5, 14, 1),   -- Jose IE201
+(6, 23, 1),   -- Torres CpE103
+(6, 24, 1),   -- Torres CpE201
+(7, 6,  1),   -- Mendoza IT203
+(7, 25, 1);   -- Mendoza CpE202
 
--- ============================================================
--- PROFESSOR-SECTION ASSIGNMENTS
 INSERT INTO ProfessorSection (professorId, sectionId, semesterId, isProfessorRecording) VALUES
 -- BSIT
-(1, 1, 1, TRUE),    -- Dela Cruz -> BSIT 1-1
-(1, 2, 1, FALSE),   -- Dela Cruz -> BSIT 1-2
-(1, 3, 1, TRUE),    -- Dela Cruz -> BSIT 2-1
-(1, 4, 1, FALSE),   -- Dela Cruz -> BSIT 2-2
-(4, 1, 1, FALSE),   -- Garcia    -> BSIT 1-1
-(4, 2, 1, TRUE),    -- Garcia    -> BSIT 1-2
-(7, 3, 1, FALSE),   -- Mendoza   -> BSIT 2-1
-(7, 4, 1, TRUE),    -- Mendoza   -> BSIT 2-2
--- BSIE
-(2, 9,  1, TRUE),   -- Santos    -> BSIE 1-1
-(2, 10, 1, FALSE),  -- Santos    -> BSIE 1-2
-(2, 11, 1, TRUE),   -- Santos    -> BSIE 2-1
-(2, 12, 1, FALSE),  -- Santos    -> BSIE 2-2
-(5, 9,  1, FALSE),  -- Jose      -> BSIE 1-1
-(5, 10, 1, TRUE),   -- Jose      -> BSIE 1-2
-(5, 11, 1, FALSE),  -- Jose      -> BSIE 2-1
-(5, 12, 1, TRUE),   -- Jose      -> BSIE 2-2
--- BSCpE
-(3, 17, 1, TRUE),   -- Reyes     -> BSCpE 1-1
-(3, 18, 1, FALSE),  -- Reyes     -> BSCpE 1-2
-(3, 19, 1, TRUE),   -- Reyes     -> BSCpE 2-1
-(3, 20, 1, FALSE),  -- Reyes     -> BSCpE 2-2
-(6, 17, 1, FALSE),  -- Torres    -> BSCpE 1-1
-(6, 18, 1, TRUE),   -- Torres    -> BSCpE 1-2
-(6, 19, 1, FALSE),  -- Torres    -> BSCpE 2-1
-(6, 20, 1, TRUE);   -- Torres    -> BSCpE 2-2
+(1, 1, 1, TRUE),    -- Dela Cruz BSIT 1-1
+(1, 2, 1, FALSE),   -- Dela Cruz BSIT 1-2
+(1, 3, 1, TRUE),    -- Dela Cruz BSIT 2-1
+(1, 4, 1, FALSE),   -- Dela Cruz BSIT 2-2
+(4, 1, 1, FALSE),   -- Garcia BSIT 1-1
+(4, 2, 1, TRUE),    -- Garcia BSIT 1-2
+(7, 3, 1, FALSE),   -- Mendoza BSIT 2-1
+(7, 4, 1, TRUE),    -- Mendoza BSIT 2-2
 
--- ============================================================
--- STUDENT-COURSE ENROLLMENTS
+-- BSIE
+(2, 9,  1, TRUE),   -- Santos BSIE 1-1
+(2, 10, 1, FALSE),  -- Santos BSIE 1-2
+(2, 11, 1, TRUE),   -- Santos BSIE 2-1
+(2, 12, 1, FALSE),  -- Santos BSIE 2-2
+(5, 9,  1, FALSE),  -- Jose BSIE 1-1
+(5, 10, 1, TRUE),   -- Jose BSIE 1-2
+(5, 11, 1, FALSE),  -- Jose BSIE 2-1
+(5, 12, 1, TRUE),   -- Jose BSIE 2-2
+-- BSCpE
+(3, 17, 1, TRUE),   -- Reyes BSCpE 1-1
+(3, 18, 1, FALSE),  -- Reyes BSCpE 1-2
+(3, 19, 1, TRUE),   -- Reyes BSCpE 2-1
+(3, 20, 1, FALSE),  -- Reyes BSCpE 2-2
+(6, 17, 1, FALSE),  -- Torres BSCpE 1-1
+(6, 18, 1, TRUE),   -- Torres BSCpE 1-2
+(6, 19, 1, FALSE),  -- Torres BSCpE 2-1
+(6, 20, 1, TRUE);   -- Torres BSCpE 2-2
+
 INSERT INTO StudentCourse (studentId, courseId, semesterId) VALUES
 -- BSIT 1-1: IT101, IT102, IT103
 (1, 1, 1), (2, 1, 1), (3, 1, 1), (4, 1, 1),
@@ -342,8 +328,7 @@ INSERT INTO StudentCourse (studentId, courseId, semesterId) VALUES
 (29, 22, 1), (30, 22, 1), (31, 22, 1), (32, 22, 1),
 (29, 23, 1), (30, 23, 1), (31, 23, 1), (32, 23, 1);
 
--- ============================================================
--- CLASS SESSIONS
+
 INSERT INTO ClassSession (courseId, sectionId, professorId, sessionDate, startTime, endTime, contextId, eventId) VALUES
 -- BSIT 1-1: IT101 (Dela Cruz)
 (1, 1, 1, '2025-08-18', '08:00:00', '10:00:00', 1, NULL),
@@ -407,11 +392,6 @@ INSERT INTO ClassSession (courseId, sectionId, professorId, sessionDate, startTi
 -- School event session
 (1, 1, 1, '2025-09-15', '08:00:00', '10:00:00', 2, 1);
 
--- ============================================================
--- ATTENDANCE RECORDS
--- recordedByUserId: professors use their userId (2-8)
--- ============================================================
-
 INSERT INTO Attendance (sessionId, studentId, statusId, recordedByUserId) VALUES
 -- Session 1  (BSIT 1-1, IT101, Aug 18) - All present
 (1, 1, 1, 2), (1, 2, 1, 2), (1, 3, 1, 2), (1, 4, 1, 2),
@@ -437,8 +417,7 @@ INSERT INTO Attendance (sessionId, studentId, statusId, recordedByUserId) VALUES
 -- Session 26 (BSCpE 1-1, CpE101, Aug 18) - One absent
 (26, 25, 1, 4), (26, 26, 3, 4), (26, 27, 1, 4), (26, 28, 1, 4);
 
--- ============================================================
--- ATTENDANCE POLICIES
+
 INSERT INTO AttendancePolicy (courseId, lateThresholdMinutes, latesEqualToAbsent, absentsEqualToDropped, isActive) VALUES
 (1,  15, 3, 5, TRUE),
 (2,  15, 3, 5, TRUE),
@@ -451,31 +430,25 @@ INSERT INTO AttendancePolicy (courseId, lateThresholdMinutes, latesEqualToAbsent
 (21, 15, 3, 5, TRUE),
 (22, 10, 3, 5, TRUE);
 
--- ============================================================
--- QUIZ / LAB SCHEDULES
 INSERT INTO QuizLabSchedule (courseId, quizDate, quizTypeId) VALUES
-(1,  '2025-09-01', 2),   -- IT101  Quiz
-(1,  '2025-09-15', 1),   -- IT101  Lab
-(2,  '2025-09-10', 2),   -- IT102  Quiz
-(4,  '2025-09-05', 2),   -- IT201  Quiz
-(11, '2025-09-08', 2),   -- IE101  Quiz
-(11, '2025-09-22', 1),   -- IE101  Lab
-(21, '2025-09-03', 2),   -- CpE101 Quiz
-(22, '2025-09-12', 1);   -- CpE102 Lab
+(1,  '2025-09-01', 2),  -- IT101  Quiz
+(1,  '2025-09-15', 1),  -- IT101  Lab
+(2,  '2025-09-10', 2),  -- IT102  Quiz
+(4,  '2025-09-05', 2),  -- IT201  Quiz
+(11, '2025-09-08', 2),  -- IE101  Quiz
+(11, '2025-09-22', 1),  -- IE101  Lab
+(21, '2025-09-03', 2),  -- CpE101 Quiz
+(22, '2025-09-12', 1);  -- CpE102 Lab
 
--- ============================================================
--- MISSED QUIZ FLAGS
 INSERT INTO MissedQuizFlag (studentId, quizId, missedQuizStatusId, decisionTypeId, remarks, decisionDate, decidedByProfessorId) VALUES
-(1,  1, 2, 1, 'Student was sick, submitted med cert',        '2025-09-02', 1),
-(2,  2, 3, 2, 'No valid excuse provided',                    '2025-09-16', 1),
-(4,  3, 4, 3, 'Official school event participant',           '2025-09-06', 1),
-(17, 5, 2, 1, 'Family emergency, submitted documents',       '2025-09-09', 2),
-(25, 7, 1, 1, 'Medical certificate attached',                '2025-09-04', 3);
+(1,  1, 2, 1, 'Student was sick, submitted med cert', '2025-09-02', 1),
+(2,  2, 3, 2, 'No valid excuse provided', '2025-09-16', 1),
+(4,  3, 4, 3, 'Official school event participant', '2025-09-06', 1),
+(17, 5, 2, 1, 'Family emergency, submitted documents', '2025-09-09', 2),
+(25, 7, 1, 1, 'Medical certificate attached', '2025-09-04', 3);
 
--- ============================================================
--- EXCUSE LETTERS
 INSERT INTO ExcuseLetter (studentId, courseId, absentDate, reason, supportingDocumentPath, excuseStatusId, reviewedByUserId, submittedDate, reviewedDate) VALUES
-(1,  1,  '2025-08-25', 'Fever and flu, confined at home',                  'docs/medcert_0001.pdf',       2, 2, '2025-08-26 09:00:00', '2025-08-26 14:00:00'),
-(4,  1,  '2025-08-20', 'Attended provincial basketball tournament',         'docs/letter_0004.pdf',        3, 2, '2025-08-21 10:00:00', '2025-08-21 16:00:00'),
-(17, 11, '2025-09-08', 'Family emergency - grandmother hospitalized',       'docs/medcert_0017.pdf',       2, 3, '2025-09-09 08:00:00', '2025-09-09 12:00:00'),
-(26, 21, '2025-09-03', 'Traffic accident on the way to school',            'docs/police_report_0026.pdf', 1, 4, '2025-09-04 09:30:00', NULL);
+(1,  1,  '2025-08-25', 'Fever and flu, confined at home', 'docs/medcert_0001.pdf', 2, 2, '2025-08-26 09:00:00', '2025-08-26 14:00:00'),
+(4,  1,  '2025-08-20', 'Attended provincial basketball tournament', 'docs/letter_0004.pdf', 3, 2, '2025-08-21 10:00:00', '2025-08-21 16:00:00'),
+(17, 11, '2025-09-08', 'Family emergency - grandmother hospitalized', 'docs/medcert_0017.pdf', 2, 3, '2025-09-09 08:00:00', '2025-09-09 12:00:00'),
+(26, 21, '2025-09-03', 'Traffic accident on the way to school', 'docs/police_report_0026.pdf', 1, 4, '2025-09-04 09:30:00', NULL);

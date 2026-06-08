@@ -1,11 +1,15 @@
 package panels;
 
+import charts.BarChartPanel;
+import charts.DonutChartPanel;
 import core.Professor;
 import java.awt.Color;
 import java.awt.Font;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -25,12 +29,20 @@ public class ProfessorDashboardPanel extends JPanel {
     private JLabel lblTitle, lblSubTitle;
     private JPanel cardSections, cardSessions, cardPending, cardFlags;
 
+    // Charts
+    private DonutChartPanel donutChart;
+    private BarChartPanel   barChart;
+
+    // Raw counts for charts
+    private int cntPresent, cntLate, cntAbsent, cntExcused;
+    private int cntPendingExcuses, cntPendingFlags;
+
     private Professor professor;
     private final ProfessorSectionService sectionService = new ProfessorSectionService();
-    private final ClassSessionService sessionService = new ClassSessionService();
-    private final AttendanceReportService reportService = new AttendanceReportService();
-    private final ExcuseLetterService excuseService = new ExcuseLetterService();
-    private final MissedQuizFlagService flagService = new MissedQuizFlagService();
+    private final ClassSessionService     sessionService = new ClassSessionService();
+    private final AttendanceReportService reportService  = new AttendanceReportService();
+    private final ExcuseLetterService     excuseService  = new ExcuseLetterService();
+    private final MissedQuizFlagService   flagService    = new MissedQuizFlagService();
 
     public ProfessorDashboardPanel(){
         setLayout(null);
@@ -38,30 +50,38 @@ public class ProfessorDashboardPanel extends JPanel {
 
         lblTitle = new JLabel("Professor Dashboard");
         lblTitle.setBounds(40, 20, 300, 30);
-        lblTitle.setFont(new Font("Arial", Font.PLAIN, 18));
+        lblTitle.setFont(new Font("Segoe UI", Font.PLAIN, 18));
         lblTitle.setForeground(new Color(60, 60, 60));
         add(lblTitle);
 
-        lblSubTitle = new JLabel("Description");
-        lblSubTitle.setBounds(40, 50, 400, 30);
-        lblSubTitle.setFont(new Font("Arial", Font.PLAIN, 14));
+        lblSubTitle = new JLabel("Today's sessions and pending action items");
+        lblSubTitle.setBounds(40, 50, 500, 20);
+        lblSubTitle.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lblSubTitle.setForeground(new Color(140, 140, 140));
         add(lblSubTitle);
 
         separator = new JSeparator();
-        separator.setForeground(Color.BLACK);
+        separator.setForeground(new Color(230, 230, 230));
         add(separator);
 
-        cardSections = DashboardCard("My Sections", "0", new Color(255, 140, 0));
+        cardSections = DashboardCard("My Sections",       "0", new Color(255, 140, 0));
+        cardSessions = DashboardCard("Sessions Today",    "0", new Color(40, 167, 69));
+        cardPending  = DashboardCard("Pending Excuses",   "0", new Color(220, 53, 69));
+        cardFlags    = DashboardCard("Missed Quiz Flags", "0", new Color(255, 193, 7));
         add(cardSections);
-
-        cardSessions = DashboardCard("Sessions Today", "0", new Color(40, 167, 69));
         add(cardSessions);
-
-        cardPending = DashboardCard("Pending Excuses", "0", new Color(220, 53, 69));
         add(cardPending);
-
-        cardFlags = DashboardCard("Missed Quiz Flags", "0", new Color(255, 193, 7));
         add(cardFlags);
+
+        // ── Donut – today's attendance breakdown ────────────────────────────
+        donutChart = new DonutChartPanel();
+        donutChart.setTitle("Attendance Breakdown (Today)");
+        add(donutChart);
+
+        // ── Bar – pending action items ──────────────────────────────────────
+        barChart = new BarChartPanel();
+        barChart.setTitle("Pending Action Items");
+        add(barChart);
     }
 
     public void setProfessor(Professor professor) throws SQLException{
@@ -77,20 +97,56 @@ public class ProfessorDashboardPanel extends JPanel {
 
         LocalDate today = LocalDate.now();
         List<ClassSession> allSessions = sessionService.getClassSessionsByProfessor(professor.professorId());
-        long sessionsToday = allSessions.stream().filter(s -> s.sessionDate().equals(today)).count();
-        updateCardValue(1, String.valueOf(sessionsToday));
+        List<ClassSession> todaySessions = allSessions.stream()
+            .filter(s -> s.sessionDate().equals(today))
+            .toList();
+        updateCardValue(1, String.valueOf(todaySessions.size()));
+
+        // Aggregate today's attendance across all today's sessions
+        cntPresent = 0; cntLate = 0; cntAbsent = 0; cntExcused = 0;
+        for(ClassSession session : todaySessions){
+            Map<String, Integer> stats = reportService.getDailyAttendanceStats(session.sessionId());
+            cntPresent += stats.getOrDefault("PRESENT",  0);
+            cntLate    += stats.getOrDefault("LATE",     0);
+            cntAbsent  += stats.getOrDefault("ABSENT",   0);
+            cntExcused += stats.getOrDefault("EXCUSED",  0);
+        }
 
         long pendingExcuses = excuseService.getAll().stream()
             .filter(e -> e.status() == ExcuseStatus.PENDING)
             .filter(e -> e.course().courseId() == professor.professorId())
             .count();
-        updateCardValue(2, String.valueOf(pendingExcuses));
+        cntPendingExcuses = (int) pendingExcuses;
+        updateCardValue(2, String.valueOf(cntPendingExcuses));
 
         long pendingFlags = flagService.getAllMissedQuizFlags().stream()
             .filter(f -> f.missedQuizStatus() == MissedQuizStatus.PENDING)
             .filter(f -> f.quiz().course().courseId() == professor.professorId())
             .count();
-        updateCardValue(3, String.valueOf(pendingFlags));
+        cntPendingFlags = (int) pendingFlags;
+        updateCardValue(3, String.valueOf(cntPendingFlags));
+
+        refreshCharts();
+    }
+
+    private void refreshCharts(){
+        // Donut: today's attendance
+        Map<String, Integer> donutData   = new LinkedHashMap<>();
+        Map<String, Color>   donutColors = new LinkedHashMap<>();
+        donutData.put("Present",  cntPresent);  donutColors.put("Present",  new Color(40, 167, 69));
+        donutData.put("Late",     cntLate);     donutColors.put("Late",     new Color(23, 162, 184));
+        donutData.put("Absent",   cntAbsent);   donutColors.put("Absent",   new Color(220, 53, 69));
+        donutData.put("Excused",  cntExcused);  donutColors.put("Excused",  new Color(255, 193, 7));
+        int total = cntPresent + cntLate + cntAbsent + cntExcused;
+        donutChart.setData(donutData, donutColors);
+        donutChart.setCenterLabel(String.valueOf(total));
+
+        // Bar: pending items
+        Map<String, Integer> barData   = new LinkedHashMap<>();
+        Map<String, Color>   barColors = new LinkedHashMap<>();
+        barData.put("Excuses", cntPendingExcuses); barColors.put("Excuses", new Color(220, 53, 69));
+        barData.put("Flags",   cntPendingFlags);   barColors.put("Flags",   new Color(255, 193, 7));
+        barChart.setData(barData, barColors);
     }
 
     private JPanel DashboardCard(String title, String value, Color accentColor){
@@ -102,23 +158,23 @@ public class ProfessorDashboardPanel extends JPanel {
             BorderFactory.createEmptyBorder(0, 0, 0, 0)
         ));
 
-        JLabel cardAccent = new JLabel("");
-        cardAccent.setBounds(0, 0, 4, 100);
-        cardAccent.setBackground(accentColor);
-        cardAccent.setOpaque(true);
-        card.add(cardAccent);
+        JLabel lblAccent = new JLabel("");
+        lblAccent.setBounds(0, 0, 4, 100);
+        lblAccent.setBackground(accentColor);
+        lblAccent.setOpaque(true);
+        card.add(lblAccent);
 
-        JLabel cardTitle = new JLabel(title);
-        cardTitle.setBounds(20, 15, 180, 20);
-        cardTitle.setFont(new Font("Arial", Font.PLAIN, 13));
-        cardTitle.setForeground(new Color(100, 100, 100));
-        card.add(cardTitle);
+        JLabel lTitle = new JLabel(title);
+        lTitle.setBounds(20, 15, 180, 20);
+        lTitle.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lTitle.setForeground(new Color(100, 100, 100));
+        card.add(lTitle);
 
-        JLabel cardValue = new JLabel(value);
-        cardValue.setBounds(20, 45, 180, 35);
-        cardValue.setFont(new Font("Arial", Font.BOLD, 28));
-        cardValue.setForeground(new Color(60, 60, 60));
-        card.add(cardValue);
+        JLabel lValue = new JLabel(value);
+        lValue.setBounds(20, 45, 180, 35);
+        lValue.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        lValue.setForeground(new Color(60, 60, 60));
+        card.add(lValue);
 
         return card;
     }
@@ -126,25 +182,35 @@ public class ProfessorDashboardPanel extends JPanel {
     @Override
     public void setBounds(int x, int y, int width, int height){
         super.setBounds(x, y, width, height);
-        if(width > 0 && height > 0){
-            separator.setBounds(40, 80, width - 80, height - 160);
+
+        if(width > 0 && separator != null){
+            separator.setBounds(40, 78, width - 80, 1);
         }
 
-        if(width > 0 && cardSections != null && cardSessions != null && cardPending != null && cardFlags != null){
-            int leftMargin = 40;
-            int rightMargin = 40;
-            int gap = 20;
-            int cardY = 100;
-            int cardH = 100;
+        if(width > 0 && cardSections != null){
+            int leftM  = 40;
+            int gap    = 16;
+            int cardY  = 90;
+            int cardH  = 100;
+            int availW = width - leftM * 2;
+            int cardW  = (availW - gap * 3) / 4;
 
-            int availableWidth = width - leftMargin - rightMargin;
-            int totalGap = gap * 3;
-            int cardW = (availableWidth - totalGap) / 4;
+            cardSections.setBounds(leftM,                     cardY, cardW, cardH);
+            cardSessions.setBounds(leftM + (cardW + gap),     cardY, cardW, cardH);
+            cardPending.setBounds (leftM + (cardW + gap) * 2, cardY, cardW, cardH);
+            cardFlags.setBounds   (leftM + (cardW + gap) * 3, cardY, cardW, cardH);
+        }
 
-            cardSections.setBounds(leftMargin, cardY, cardW, cardH);
-            cardSessions.setBounds(leftMargin + cardW + gap, cardY, cardW, cardH);
-            cardPending.setBounds(leftMargin + (cardW + gap) * 2, cardY, cardW, cardH);
-            cardFlags.setBounds(leftMargin + (cardW + gap) * 3, cardY, cardW, cardH);
+        if(width > 0 && donutChart != null && barChart != null){
+            int chartY = 210;
+            int chartH = height - chartY - 20;
+            if(chartH < 80) chartH = 80;
+            int leftM  = 40;
+            int gap    = 20;
+            int halfW  = (width - leftM * 2 - gap) / 2;
+
+            donutChart.setBounds(leftM,               chartY, halfW, chartH);
+            barChart.setBounds  (leftM + halfW + gap, chartY, halfW, chartH);
         }
     }
 

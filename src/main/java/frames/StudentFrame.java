@@ -29,6 +29,7 @@ public class StudentFrame extends JFrame implements ActionListener {
     private JButton btnProfile, btnAttendance, btnExcused, btnSchedule, btnLogout;
     private JPanel currentPanel;
     private JPanel contentContainer;
+    private JPanel titleBar;
     private Student currentStudent;
     private User currentUser;
     private final StudentService studentService = new StudentService();
@@ -96,7 +97,7 @@ public class StudentFrame extends JFrame implements ActionListener {
     }
 
     private void TitleBar(){
-        JPanel titleBar = new JPanel();
+        titleBar = new JPanel();
         titleBar.setBounds(0, 0, getWidth(), 32);
         titleBar.setBackground(Color.WHITE);
         titleBar.setLayout(null);
@@ -125,15 +126,7 @@ public class StudentFrame extends JFrame implements ActionListener {
         closeBtn.addActionListener(this);
         titleBar.add(closeBtn);
 
-        int buttonWidth = 80;
-        int buttonHeight = 24;
-        int gap = 10;
-        int totalWidth = (buttonWidth * 4) + (gap * 3);
-        int startX = (getWidth() - totalWidth) / 2;
-        int buttonY = 8;
-
         btnProfile = new JButton("Profile");
-        btnProfile.setBounds(startX, buttonY, buttonWidth, buttonHeight);
         btnProfile.setBackground(Color.WHITE);
         btnProfile.setBorder(null);
         btnProfile.setFocusPainted(false);
@@ -143,7 +136,6 @@ public class StudentFrame extends JFrame implements ActionListener {
         titleBar.add(btnProfile);
 
         btnAttendance = new JButton("Attendance");
-        btnAttendance.setBounds(startX + buttonWidth + gap, buttonY, buttonWidth, buttonHeight);
         btnAttendance.setBackground(Color.WHITE);
         btnAttendance.setBorder(null);
         btnAttendance.setFocusPainted(false);
@@ -153,7 +145,6 @@ public class StudentFrame extends JFrame implements ActionListener {
         titleBar.add(btnAttendance);
 
         btnExcused = new JButton("Excuse Letter");
-        btnExcused.setBounds(startX + (buttonWidth + gap) * 2, buttonY, buttonWidth, buttonHeight);
         btnExcused.setBackground(Color.WHITE);
         btnExcused.setBorder(null);
         btnExcused.setFocusPainted(false);
@@ -163,7 +154,6 @@ public class StudentFrame extends JFrame implements ActionListener {
         titleBar.add(btnExcused);
 
         btnSchedule = new JButton("Schedule");
-        btnSchedule.setBounds(startX + (buttonWidth + gap) * 3, buttonY, buttonWidth, buttonHeight);
         btnSchedule.setBackground(Color.WHITE);
         btnSchedule.setBorder(null);
         btnSchedule.setFocusPainted(false);
@@ -173,7 +163,6 @@ public class StudentFrame extends JFrame implements ActionListener {
         titleBar.add(btnSchedule);
 
         btnLogout = new JButton("Logout");
-        btnLogout.setBounds(startX + (buttonWidth + gap) * 4, buttonY, buttonWidth, buttonHeight);
         btnLogout.setBackground(Color.WHITE);
         btnLogout.setBorder(null);
         btnLogout.setFocusPainted(false);
@@ -182,7 +171,43 @@ public class StudentFrame extends JFrame implements ActionListener {
         btnLogout.addActionListener(this);
         titleBar.add(btnLogout);
 
+        repositionTitleBar(getWidth());
         add(titleBar);
+    }
+
+    private void repositionTitleBar(int w){
+        if(closeBtn == null){
+            return;
+        }
+
+        titleBar.setBounds(0, 0, w, 32);
+        closeBtn.setBounds(w - 40, 8, 28, 24);
+
+        if(btnProfile == null){
+            return;
+        }
+
+        int totalWidth = (80 * 5) + (10 * 4);
+        int startX = (w - totalWidth) / 2;
+        int y = 8;
+
+        btnProfile.setBounds(startX, y, 80, 24);
+        btnAttendance.setBounds(startX + 80 + 10, y, 80, 24);
+        btnExcused.setBounds(startX + (80 + 10) * 2, y, 80, 24);
+        btnSchedule.setBounds(startX + (80 + 10) * 3, y, 80, 24);
+        btnLogout.setBounds(startX + (80 + 10) * 4, y, 80, 24);
+    }
+
+    @Override
+    public void setBounds(int x, int y, int w, int h){
+        super.setBounds(x, y, w, h);
+        repositionTitleBar(w);
+        if(contentContainer != null){
+            contentContainer.setBounds(0, 32, w, h - 32);
+        }
+        if(currentPanel != null && contentContainer != null){
+            currentPanel.setBounds(0, 0, contentContainer.getWidth(), contentContainer.getHeight());
+        }
     }
 
     private void ContentContainer(){

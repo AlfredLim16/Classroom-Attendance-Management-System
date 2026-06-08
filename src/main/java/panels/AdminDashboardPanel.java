@@ -1,8 +1,12 @@
 package panels;
 
+import charts.BarChartPanel;
+import charts.DonutChartPanel;
 import core.User;
 import java.awt.Color;
 import java.awt.Font;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -20,6 +24,11 @@ public class AdminDashboardPanel extends JPanel {
     private JLabel lblTitle, lblSubTitle;
     private JPanel cardUsers, cardStudents, cardProfessors, cardSecretaries, cardCourses, cardSections;
 
+    private BarChartPanel barChart;
+    private DonutChartPanel donutChart;
+    private JLabel lblBarTitle, lblDonutTitle;
+    private int cntStudents, cntProfessors, cntSecretaries, cntCourses, cntSections;
+
     private User currentUser;
     private final UserService userService = new UserService();
     private final StudentService studentService = new StudentService();
@@ -34,36 +43,40 @@ public class AdminDashboardPanel extends JPanel {
 
         lblTitle = new JLabel("Admin Dashboard");
         lblTitle.setBounds(40, 20, 300, 30);
-        lblTitle.setFont(new Font("Arial", Font.PLAIN, 18));
+        lblTitle.setFont(new Font("Segoe UI", Font.PLAIN, 18));
         lblTitle.setForeground(new Color(60, 60, 60));
         add(lblTitle);
 
         lblSubTitle = new JLabel("System overview and management controls");
-        lblSubTitle.setBounds(40, 50, 400, 30);
-        lblSubTitle.setFont(new Font("Arial", Font.PLAIN, 14));
+        lblSubTitle.setBounds(40, 50, 400, 20);
+        lblSubTitle.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lblSubTitle.setForeground(new Color(140, 140, 140));
         add(lblSubTitle);
 
         separator = new JSeparator();
-        separator.setForeground(Color.BLACK);
+        separator.setForeground(new Color(230, 230, 230));
         add(separator);
 
         cardUsers = DashboardCard("Total Users", "0", new Color(255, 140, 0));
-        add(cardUsers);
-
         cardStudents = DashboardCard("Students", "0", new Color(40, 167, 69));
-        add(cardStudents);
-
         cardProfessors = DashboardCard("Professors", "0", new Color(220, 53, 69));
-        add(cardProfessors);
-
         cardSecretaries = DashboardCard("Secretaries", "0", new Color(255, 193, 7));
-        add(cardSecretaries);
-
         cardCourses = DashboardCard("Courses", "0", new Color(23, 162, 184));
-        add(cardCourses);
-
         cardSections = DashboardCard("Sections", "0", new Color(108, 117, 125));
+        add(cardUsers);
+        add(cardStudents);
+        add(cardProfessors);
+        add(cardSecretaries);
+        add(cardCourses);
         add(cardSections);
+
+        barChart = new BarChartPanel();
+        barChart.setTitle("User Distribution");
+        add(barChart);
+
+        donutChart = new DonutChartPanel();
+        donutChart.setTitle("Role Breakdown");
+        add(donutChart);
     }
 
     public void setCurrentUser(User user){
@@ -73,18 +86,48 @@ public class AdminDashboardPanel extends JPanel {
 
     private void loadStats(){
         int totalUsers = userService.getAllUsers().size();
-        int students = studentService.getAllStudents().size();
-        int professors = professorService.getAllProfessors().size();
-        int secretaries = secretaryService.getAllSecretaries().size();
-        int courses = courseService.getAllCourses().size();
-        int sections = sectionService.getAllSections().size();
+        cntStudents = studentService.getAllStudents().size();
+        cntProfessors = professorService.getAllProfessors().size();
+        cntSecretaries = secretaryService.getAllSecretaries().size();
+        cntCourses = courseService.getAllCourses().size();
+        cntSections = sectionService.getAllSections().size();
 
         updateCardValue(0, String.valueOf(totalUsers));
-        updateCardValue(1, String.valueOf(students));
-        updateCardValue(2, String.valueOf(professors));
-        updateCardValue(3, String.valueOf(secretaries));
-        updateCardValue(4, String.valueOf(courses));
-        updateCardValue(5, String.valueOf(sections));
+        updateCardValue(1, String.valueOf(cntStudents));
+        updateCardValue(2, String.valueOf(cntProfessors));
+        updateCardValue(3, String.valueOf(cntSecretaries));
+        updateCardValue(4, String.valueOf(cntCourses));
+        updateCardValue(5, String.valueOf(cntSections));
+
+        refreshCharts();
+    }
+
+    private void refreshCharts(){
+        Map<String, Integer> barData = new LinkedHashMap<>();
+        Map<String, Color> barColors = new LinkedHashMap<>();
+        barData.put("Students", cntStudents);
+        barColors.put("Students", new Color(40, 167, 69));
+        barData.put("Professors", cntProfessors);
+        barColors.put("Professors", new Color(220, 53, 69));
+        barData.put("Secretaries", cntSecretaries);
+        barColors.put("Secretaries", new Color(255, 193, 7));
+        barData.put("Courses", cntCourses);
+        barColors.put("Courses", new Color(23, 162, 184));
+        barData.put("Sections", cntSections);
+        barColors.put("Sections", new Color(108, 117, 125));
+        barChart.setData(barData, barColors);
+
+        Map<String, Integer> donutData = new LinkedHashMap<>();
+        Map<String, Color> donutColors = new LinkedHashMap<>();
+        donutData.put("Students", cntStudents);
+        donutColors.put("Students", new Color(40, 167, 69));
+        donutData.put("Professors", cntProfessors);
+        donutColors.put("Professors", new Color(220, 53, 69));
+        donutData.put("Secretaries", cntSecretaries);
+        donutColors.put("Secretaries", new Color(255, 193, 7));
+        int roleTotal = cntStudents + cntProfessors + cntSecretaries;
+        donutChart.setData(donutData, donutColors);
+        donutChart.setCenterLabel(String.valueOf(roleTotal));
     }
 
     private JPanel DashboardCard(String title, String value, Color accentColor){
@@ -102,17 +145,17 @@ public class AdminDashboardPanel extends JPanel {
         lblAccent.setOpaque(true);
         card.add(lblAccent);
 
-        JLabel lblTitle = new JLabel(title);
-        lblTitle.setBounds(20, 15, 180, 20);
-        lblTitle.setFont(new Font("Arial", Font.PLAIN, 13));
-        lblTitle.setForeground(new Color(100, 100, 100));
-        card.add(lblTitle);
+        JLabel lTitle = new JLabel(title);
+        lTitle.setBounds(20, 15, 180, 20);
+        lTitle.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lTitle.setForeground(new Color(100, 100, 100));
+        card.add(lTitle);
 
-        JLabel lblValue = new JLabel(value);
-        lblValue.setBounds(20, 45, 180, 35);
-        lblValue.setFont(new Font("Arial", Font.BOLD, 28));
-        lblValue.setForeground(new Color(60, 60, 60));
-        card.add(lblValue);
+        JLabel lValue = new JLabel(value);
+        lValue.setBounds(20, 45, 180, 35);
+        lValue.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        lValue.setForeground(new Color(60, 60, 60));
+        card.add(lValue);
 
         return card;
     }
@@ -120,40 +163,61 @@ public class AdminDashboardPanel extends JPanel {
     @Override
     public void setBounds(int x, int y, int width, int height){
         super.setBounds(x, y, width, height);
-        if(width > 0 && height > 0){
-            separator.setBounds(40, 80, width - 80, height - 160);
+
+        if(width > 0 && height > 0 && separator != null){
+            separator.setBounds(40, 78, width - 80, 1);
         }
 
-        if(width > 0 && cardUsers != null && cardStudents != null && cardProfessors != null
-                && cardSecretaries != null && cardCourses != null && cardSections != null){
-            int leftMargin = 40;
-            int rightMargin = 40;
-            int gap = 20;
-            int cardY = 100;
+        if(width > 0 && cardUsers != null){
+            int leftM = 40;
+            int rightM = 40;
+            int gap = 16;
+            int cardY = 90;
             int cardH = 100;
 
-            int availableWidth = width - leftMargin - rightMargin;
+            int availW = width - leftM - rightM;
             int totalGap = gap * 5;
-            int cardW = (availableWidth - totalGap) / 6;
+            int cardW = (availW - totalGap) / 6;
 
-            cardUsers.setBounds(leftMargin, cardY, cardW, cardH);
-            cardStudents.setBounds(leftMargin + cardW + gap, cardY, cardW, cardH);
-            cardProfessors.setBounds(leftMargin + (cardW + gap) * 2, cardY, cardW, cardH);
-            cardSecretaries.setBounds(leftMargin + (cardW + gap) * 3, cardY, cardW, cardH);
-            cardCourses.setBounds(leftMargin + (cardW + gap) * 4, cardY, cardW, cardH);
-            cardSections.setBounds(leftMargin + (cardW + gap) * 5, cardY, cardW, cardH);
+            cardUsers.setBounds(leftM, cardY, cardW, cardH);
+            cardStudents.setBounds(leftM + (cardW + gap), cardY, cardW, cardH);
+            cardProfessors.setBounds(leftM + (cardW + gap) * 2, cardY, cardW, cardH);
+            cardSecretaries.setBounds(leftM + (cardW + gap) * 3, cardY, cardW, cardH);
+            cardCourses.setBounds(leftM + (cardW + gap) * 4, cardY, cardW, cardH);
+            cardSections.setBounds(leftM + (cardW + gap) * 5, cardY, cardW, cardH);
+        }
+
+        if(width > 0 && barChart != null && donutChart != null){
+            int chartY = 210;
+            int chartH = height - chartY - 20;
+            if(chartH < 80){
+                chartH = 80;
+            }
+            int leftM = 40;
+            int gap = 20;
+            int halfW = (width - leftM * 2 - gap) / 2;
+
+            barChart.setBounds(leftM, chartY, halfW, chartH);
+            donutChart.setBounds(leftM + halfW + gap, chartY, halfW, chartH);
         }
     }
 
     public void updateCardValue(int cardIndex, String value){
         JPanel targetCard = switch(cardIndex){
-            case 0 -> cardUsers;
-            case 1 -> cardStudents;
-            case 2 -> cardProfessors;
-            case 3 -> cardSecretaries;
-            case 4 -> cardCourses;
-            case 5 -> cardSections;
-            default -> null;
+            case 0 ->
+                cardUsers;
+            case 1 ->
+                cardStudents;
+            case 2 ->
+                cardProfessors;
+            case 3 ->
+                cardSecretaries;
+            case 4 ->
+                cardCourses;
+            case 5 ->
+                cardSections;
+            default ->
+                null;
         };
         if(targetCard != null){
             for(java.awt.Component c : targetCard.getComponents()){

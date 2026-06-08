@@ -28,9 +28,10 @@ public class SecretaryFrame extends JFrame implements ActionListener {
 
     private JLabel titleLabel;
     private JButton closeBtn;
-    private JButton btnDashboard, btnAttendance, btnExcuses, btnMissedQuiz, btnSchedule;
+    private JButton btnDashboard, btnAttendance, btnExcuses, btnMissedQuiz, btnSchedule, btnLogout;
     private JPanel currentPanel;
     private JPanel contentContainer;
+    private JPanel titleBar;
 
     private User currentUser;
     private Secretary secretary;
@@ -76,7 +77,7 @@ public class SecretaryFrame extends JFrame implements ActionListener {
     }
 
     private void TitleBar(){
-        JPanel titleBar = new JPanel();
+        titleBar = new JPanel();
         titleBar.setBounds(0, 0, getWidth(), 32);
         titleBar.setBackground(Color.WHITE);
         titleBar.setLayout(null);
@@ -105,15 +106,7 @@ public class SecretaryFrame extends JFrame implements ActionListener {
         closeBtn.addActionListener(this);
         titleBar.add(closeBtn);
 
-        int buttonWidth = 100;
-        int buttonHeight = 24;
-        int gap = 10;
-        int totalWidth = (buttonWidth * 5) + (gap * 4);
-        int startX = (getWidth() - totalWidth) / 2;
-        int buttonY = 8;
-
         btnDashboard = new JButton("Dashboard");
-        btnDashboard.setBounds(startX, buttonY, buttonWidth, buttonHeight);
         btnDashboard.setBackground(Color.WHITE);
         btnDashboard.setBorder(null);
         btnDashboard.setFocusPainted(false);
@@ -123,7 +116,6 @@ public class SecretaryFrame extends JFrame implements ActionListener {
         titleBar.add(btnDashboard);
 
         btnAttendance = new JButton("Attendance");
-        btnAttendance.setBounds(startX + buttonWidth + gap, buttonY, buttonWidth, buttonHeight);
         btnAttendance.setBackground(Color.WHITE);
         btnAttendance.setBorder(null);
         btnAttendance.setFocusPainted(false);
@@ -133,7 +125,6 @@ public class SecretaryFrame extends JFrame implements ActionListener {
         titleBar.add(btnAttendance);
 
         btnExcuses = new JButton("Excuses");
-        btnExcuses.setBounds(startX + (buttonWidth + gap) * 2, buttonY, buttonWidth, buttonHeight);
         btnExcuses.setBackground(Color.WHITE);
         btnExcuses.setBorder(null);
         btnExcuses.setFocusPainted(false);
@@ -143,7 +134,6 @@ public class SecretaryFrame extends JFrame implements ActionListener {
         titleBar.add(btnExcuses);
 
         btnMissedQuiz = new JButton("Missed Quiz");
-        btnMissedQuiz.setBounds(startX + (buttonWidth + gap) * 3, buttonY, buttonWidth, buttonHeight);
         btnMissedQuiz.setBackground(Color.WHITE);
         btnMissedQuiz.setBorder(null);
         btnMissedQuiz.setFocusPainted(false);
@@ -153,7 +143,6 @@ public class SecretaryFrame extends JFrame implements ActionListener {
         titleBar.add(btnMissedQuiz);
 
         btnSchedule = new JButton("Schedule");
-        btnSchedule.setBounds(startX + (buttonWidth + gap) * 4, buttonY, buttonWidth, buttonHeight);
         btnSchedule.setBackground(Color.WHITE);
         btnSchedule.setBorder(null);
         btnSchedule.setFocusPainted(false);
@@ -162,7 +151,53 @@ public class SecretaryFrame extends JFrame implements ActionListener {
         btnSchedule.addActionListener(this);
         titleBar.add(btnSchedule);
 
+        btnLogout = new JButton("Logout");
+        btnLogout.setBackground(Color.WHITE);
+        btnLogout.setBorder(null);
+        btnLogout.setFocusPainted(false);
+        btnLogout.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnLogout.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        btnLogout.addActionListener(this);
+        titleBar.add(btnLogout);
+
+        repositionTitleBar(getWidth());
         add(titleBar);
+    }
+
+    private void repositionTitleBar(int w){
+        if(closeBtn == null){
+            return;
+        }
+
+        titleBar.setBounds(0, 0, w, 32);
+        closeBtn.setBounds(w - 40, 8, 28, 24);
+
+        if(btnDashboard == null){
+            return;
+        }
+
+        int totalWidth = (100 * 6) + (10 * 5);
+        int startX = (w - totalWidth) / 2;
+        int y = 8;
+
+        btnDashboard.setBounds(startX, y, 100, 24);
+        btnAttendance.setBounds(startX + 100 + 10, y, 100, 24);
+        btnExcuses.setBounds(startX + (100 + 10) * 2, y, 100, 24);
+        btnMissedQuiz.setBounds(startX + (100 + 10) * 3, y, 100, 24);
+        btnSchedule.setBounds(startX + (100 + 10) * 4, y, 100, 24);
+        btnLogout.setBounds(startX + (100 + 10) * 5, y, 100, 24);
+    }
+
+    @Override
+    public void setBounds(int x, int y, int w, int h){
+        super.setBounds(x, y, w, h);
+        repositionTitleBar(w);
+        if(contentContainer != null){
+            contentContainer.setBounds(0, 32, w, h - 32);
+        }
+        if(currentPanel != null && contentContainer != null){
+            currentPanel.setBounds(0, 0, contentContainer.getWidth(), contentContainer.getHeight());
+        }
     }
 
     private void ContentContainer(){
@@ -214,6 +249,11 @@ public class SecretaryFrame extends JFrame implements ActionListener {
             SecretarySchedulePanel panel = new SecretarySchedulePanel();
             if(secretary != null) panel.setSection(secretary.section());
             showPanel(panel);
+        }
+        if(e.getSource() == btnLogout){
+            dispose();
+            LoginFrame loginFrame = new LoginFrame();
+            loginFrame.setVisible(true);
         }
     }
 }

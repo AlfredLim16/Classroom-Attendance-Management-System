@@ -34,6 +34,7 @@ public class ProfessorFrame extends JFrame implements ActionListener {
     private JButton btnDashboard, btnSections, btnAttendance, btnExcuses, btnMissedQuiz, btnSchedule, btnPolicy, bntLogout;
     private JPanel currentPanel;
     private JPanel contentContainer;
+    private JPanel titleBar;
 
     private User currentUser;
     private Professor professor;
@@ -82,7 +83,7 @@ public class ProfessorFrame extends JFrame implements ActionListener {
     }
 
     private void TitleBar(){
-        JPanel titleBar = new JPanel();
+        titleBar = new JPanel();
         titleBar.setBounds(0, 0, getWidth(), 32);
         titleBar.setBackground(Color.WHITE);
         titleBar.setLayout(null);
@@ -111,15 +112,7 @@ public class ProfessorFrame extends JFrame implements ActionListener {
         closeBtn.addActionListener(this);
         titleBar.add(closeBtn);
 
-        int buttonWidth = 90;
-        int buttonHeight = 24;
-        int gap = 8;
-        int totalWidth = (buttonWidth * 7) + (gap * 6);
-        int startX = (getWidth() - totalWidth) / 2;
-        int buttonY = 8;
-
         btnDashboard = new JButton("Dashboard");
-        btnDashboard.setBounds(startX, buttonY, buttonWidth, buttonHeight);
         btnDashboard.setBackground(Color.WHITE);
         btnDashboard.setBorder(null);
         btnDashboard.setFocusPainted(false);
@@ -129,7 +122,6 @@ public class ProfessorFrame extends JFrame implements ActionListener {
         titleBar.add(btnDashboard);
 
         btnSections = new JButton("Sections");
-        btnSections.setBounds(startX + buttonWidth + gap, buttonY, buttonWidth, buttonHeight);
         btnSections.setBackground(Color.WHITE);
         btnSections.setBorder(null);
         btnSections.setFocusPainted(false);
@@ -139,7 +131,6 @@ public class ProfessorFrame extends JFrame implements ActionListener {
         titleBar.add(btnSections);
 
         btnAttendance = new JButton("Attendance");
-        btnAttendance.setBounds(startX + (buttonWidth + gap) * 2, buttonY, buttonWidth, buttonHeight);
         btnAttendance.setBackground(Color.WHITE);
         btnAttendance.setBorder(null);
         btnAttendance.setFocusPainted(false);
@@ -149,7 +140,6 @@ public class ProfessorFrame extends JFrame implements ActionListener {
         titleBar.add(btnAttendance);
 
         btnExcuses = new JButton("Excuses");
-        btnExcuses.setBounds(startX + (buttonWidth + gap) * 3, buttonY, buttonWidth, buttonHeight);
         btnExcuses.setBackground(Color.WHITE);
         btnExcuses.setBorder(null);
         btnExcuses.setFocusPainted(false);
@@ -159,7 +149,6 @@ public class ProfessorFrame extends JFrame implements ActionListener {
         titleBar.add(btnExcuses);
 
         btnMissedQuiz = new JButton("Missed Quiz");
-        btnMissedQuiz.setBounds(startX + (buttonWidth + gap) * 4, buttonY, buttonWidth, buttonHeight);
         btnMissedQuiz.setBackground(Color.WHITE);
         btnMissedQuiz.setBorder(null);
         btnMissedQuiz.setFocusPainted(false);
@@ -169,7 +158,6 @@ public class ProfessorFrame extends JFrame implements ActionListener {
         titleBar.add(btnMissedQuiz);
 
         btnSchedule = new JButton("Schedule");
-        btnSchedule.setBounds(startX + (buttonWidth + gap) * 5, buttonY, buttonWidth, buttonHeight);
         btnSchedule.setBackground(Color.WHITE);
         btnSchedule.setBorder(null);
         btnSchedule.setFocusPainted(false);
@@ -179,7 +167,6 @@ public class ProfessorFrame extends JFrame implements ActionListener {
         titleBar.add(btnSchedule);
 
         btnPolicy = new JButton("Policies");
-        btnPolicy.setBounds(startX + (buttonWidth + gap) * 6, buttonY, buttonWidth, buttonHeight);
         btnPolicy.setBackground(Color.WHITE);
         btnPolicy.setBorder(null);
         btnPolicy.setFocusPainted(false);
@@ -189,7 +176,6 @@ public class ProfessorFrame extends JFrame implements ActionListener {
         titleBar.add(btnPolicy);
 
         bntLogout = new JButton("Logout");
-        bntLogout.setBounds(startX + (buttonWidth + gap) * 7, buttonY, buttonWidth, buttonHeight);
         bntLogout.setBackground(Color.WHITE);
         bntLogout.setBorder(null);
         bntLogout.setFocusPainted(false);
@@ -198,7 +184,46 @@ public class ProfessorFrame extends JFrame implements ActionListener {
         bntLogout.addActionListener(this);
         titleBar.add(bntLogout);
 
+        repositionTitleBar(getWidth());
         add(titleBar);
+    }
+
+    private void repositionTitleBar(int w){
+        if(closeBtn == null){
+            return;
+        }
+
+        titleBar.setBounds(0, 0, w, 32);
+        closeBtn.setBounds(w - 40, 8, 28, 24);
+
+        if(btnDashboard == null){
+            return;
+        }
+
+        int totalWidth = (90 * 8) + (8 * 7);
+        int startX = (w - totalWidth) / 2;
+        int y = 8;
+
+        btnDashboard.setBounds(startX, y, 90, 24);
+        btnSections.setBounds(startX + 90 + 8, y, 90, 24);
+        btnAttendance.setBounds(startX + (90 + 8) * 2, y, 90, 24);
+        btnExcuses.setBounds(startX + (90 + 8) * 3, y, 90, 24);
+        btnMissedQuiz.setBounds(startX + (90 + 8) * 4, y, 90, 24);
+        btnSchedule.setBounds(startX + (90 + 8) * 5, y, 90, 24);
+        btnPolicy.setBounds(startX + (90 + 8) * 6, y, 90, 24);
+        bntLogout.setBounds(startX + (90 + 8) * 7, y, 90, 24);
+    }
+
+    @Override
+    public void setBounds(int x, int y, int w, int h){
+        super.setBounds(x, y, w, h);
+        repositionTitleBar(w);
+        if(contentContainer != null){
+            contentContainer.setBounds(0, 32, w, h - 32);
+        }
+        if(currentPanel != null && contentContainer != null){
+            currentPanel.setBounds(0, 0, contentContainer.getWidth(), contentContainer.getHeight());
+        }
     }
 
     private void ContentContainer(){

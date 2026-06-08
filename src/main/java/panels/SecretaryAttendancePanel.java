@@ -7,6 +7,7 @@ import junction.Attendance;
 import junction.ClassSession;
 import lookup.AttendanceStatus;
 import dao.SecretaryStudentDAO;
+import services.AttendancePermissionStore;
 import services.AttendanceQueryService;
 import services.AttendanceRecordingService;
 import services.ClassSessionService;
@@ -38,7 +39,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class SecretaryAttendancePanel extends JPanel implements ActionListener {
 
-    private JLabel lblTitle, lblSubTitle;
+    private JLabel lblTitle, lblSubTitle, lblPermissionBanner;
     private JSeparator separator;
     private JComboBox<String> cmbSession;
     private JButton btnLoad, btnMarkPresent, btnMarkLate, btnMarkAbsent;
@@ -52,6 +53,7 @@ public class SecretaryAttendancePanel extends JPanel implements ActionListener {
     private final AttendanceQueryService attendanceService = new AttendanceQueryService();
     private final AttendanceRecordingService recordingService = new AttendanceRecordingService();
     private final SecretaryStudentDAO secretaryDAO = new SecretaryStudentDAO();
+    private final AttendancePermissionStore permStore = AttendancePermissionStore.getInstance();
 
     private final Map<Integer, Integer> comboIndexToSessionId = new HashMap<>();
     private final List<Integer> rowStudentIds = new ArrayList<>();
@@ -70,6 +72,16 @@ public class SecretaryAttendancePanel extends JPanel implements ActionListener {
         lblSubTitle.setBounds(40, 50, 400, 30);
         lblSubTitle.setFont(new Font("Arial", Font.PLAIN, 14));
         add(lblSubTitle);
+
+        // Permission banner — shown when professor has NOT delegated this section
+        lblPermissionBanner = new JLabel("⚠  Attendance is currently managed by the Professor. You have view-only access.");
+        lblPermissionBanner.setFont(new Font("Arial", Font.BOLD, 13));
+        lblPermissionBanner.setForeground(Color.WHITE);
+        lblPermissionBanner.setOpaque(true);
+        lblPermissionBanner.setBackground(new Color(220, 53, 69));
+        lblPermissionBanner.setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 12));
+        lblPermissionBanner.setVisible(false); // hidden by default until section is set
+        add(lblPermissionBanner);
 
         separator = new JSeparator();
         separator.setForeground(Color.BLACK);
@@ -171,10 +183,28 @@ public class SecretaryAttendancePanel extends JPanel implements ActionListener {
     public void setSection(Section section){
         this.section = section;
         loadSessions();
+        refreshPermissionState();
     }
 
     public void setCurrentUser(User user){
         this.currentUser = user;
+    }
+
+    /** Refreshes the banner + button state based on the current permission setting. */
+    private void refreshPermissionState(){
+        if(section == null) return;
+        boolean allowed = permStore.isSecretaryAllowed(section.sectionId());
+        lblPermissionBanner.setVisible(!allowed);
+        boolean enabled = allowed;
+        btnLoad.setEnabled(enabled);
+        btnMarkPresent.setEnabled(enabled);
+        btnMarkLate.setEnabled(enabled);
+        btnMarkAbsent.setEnabled(enabled);
+        cmbSession.setEnabled(enabled);
+        if(!allowed){
+            tableModel.setRowCount(0);
+            rowStudentIds.clear();
+        }
     }
 
     private void loadSessions(){
@@ -226,6 +256,16 @@ public class SecretaryAttendancePanel extends JPanel implements ActionListener {
             return;
         }
 
+        // Double-check permission at mark time (professor may have revoked it since the panel loaded)
+        if(!permStore.isSecretaryAllowed(section.sectionId())){
+            JOptionPane.showMessageDialog(this,
+                "You are not permitted to record attendance for this section.\n" +
+                "The Professor has not delegated attendance to the Secretary.",
+                "Access Denied", JOptionPane.WARNING_MESSAGE);
+            refreshPermissionState();
+            return;
+        }
+
         int sessionId = comboIndexToSessionId.get(cmbSession.getSelectedIndex());
         int[] selectedRows = attendanceTable.getSelectedRows();
         if(selectedRows.length == 0){
@@ -268,6 +308,10 @@ public class SecretaryAttendancePanel extends JPanel implements ActionListener {
         super.setBounds(x, y, width, height);
         if(width > 0 && height > 0 && scrollPane != null){
             separator.setBounds(40, 80, width - 80, height - 160);
+            // Banner sits between the subtitle and the separator
+            if(lblPermissionBanner != null){
+                lblPermissionBanner.setBounds(40, 55, width - 80, 28);
+            }
             scrollPane.setBounds(40, 150, width - 80, height - 180);
         }
 

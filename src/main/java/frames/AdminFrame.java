@@ -33,11 +33,6 @@ public class AdminFrame extends JFrame implements ActionListener {
     private JPanel contentContainer;
     private JPanel titleBar;
 
-    private static final int TITLEBAR_H = 32;
-    private static final int NAV_BTN_W = 80;
-    private static final int NAV_BTN_H = 24;
-    private static final int NAV_BTN_GAP = 6;
-
     private User currentUser;
 
     public AdminFrame(){
@@ -70,7 +65,7 @@ public class AdminFrame extends JFrame implements ActionListener {
 
     private void TitleBar(){
         titleBar = new JPanel();
-        titleBar.setBounds(0, 0, getWidth(), TITLEBAR_H);
+        titleBar.setBounds(0, 0, getWidth(), 32);
         titleBar.setBackground(Color.WHITE);
         titleBar.setLayout(null);
 
@@ -83,7 +78,7 @@ public class AdminFrame extends JFrame implements ActionListener {
         titleLabel = new JLabel("Orange - Admin");
         titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         titleLabel.setForeground(new Color(60, 60, 60));
-        titleLabel.setBounds(40, 0, 200, TITLEBAR_H + 8);
+        titleLabel.setBounds(40, 0, 200, 40);
         titleBar.add(titleLabel);
 
         ImageIcon closeRaw = new ImageIcon(getClass().getResource("/icons/close.png"));
@@ -98,24 +93,85 @@ public class AdminFrame extends JFrame implements ActionListener {
         closeBtn.addActionListener(this);
         titleBar.add(closeBtn);
 
-        btnDashboard = navButton("Dashboard");
-        btnUsers = navButton("Users");
-        btnCourses = navButton("Courses");
-        btnSections = navButton("Sections");
-        btnProfessors = navButton("Professors");
-        btnStudents = navButton("Students");
-        btnReports = navButton("Reports");
-        btnSettings = navButton("Settings");
-        btnLogout = navButton("Logout");
-
+        btnDashboard = new JButton("Dashboard");
+        btnDashboard.setBackground(Color.WHITE);
+        btnDashboard.setBorder(null);
+        btnDashboard.setFocusPainted(false);
+        btnDashboard.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnDashboard.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        btnDashboard.addActionListener(this);
         titleBar.add(btnDashboard);
+
+        btnUsers = new JButton("Users");
+        btnUsers.setBackground(Color.WHITE);
+        btnUsers.setBorder(null);
+        btnUsers.setFocusPainted(false);
+        btnUsers.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnUsers.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        btnUsers.addActionListener(this);
         titleBar.add(btnUsers);
+
+        btnCourses = new JButton("Courses");
+        btnCourses.setBackground(Color.WHITE);
+        btnCourses.setBorder(null);
+        btnCourses.setFocusPainted(false);
+        btnCourses.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnCourses.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        btnCourses.addActionListener(this);
         titleBar.add(btnCourses);
+
+        btnSections = new JButton("Sections");
+        btnSections.setBackground(Color.WHITE);
+        btnSections.setBorder(null);
+        btnSections.setFocusPainted(false);
+        btnSections.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnSections.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        btnSections.addActionListener(this);
         titleBar.add(btnSections);
+
+        btnProfessors = new JButton("Professors");
+        btnProfessors.setBackground(Color.WHITE);
+        btnProfessors.setBorder(null);
+        btnProfessors.setFocusPainted(false);
+        btnProfessors.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnProfessors.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        btnProfessors.addActionListener(this);
         titleBar.add(btnProfessors);
+
+        btnStudents = new JButton("Students");
+        btnStudents.setBackground(Color.WHITE);
+        btnStudents.setBorder(null);
+        btnStudents.setFocusPainted(false);
+        btnStudents.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnStudents.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        btnStudents.addActionListener(this);
         titleBar.add(btnStudents);
+
+        btnReports = new JButton("Reports");
+        btnReports.setBackground(Color.WHITE);
+        btnReports.setBorder(null);
+        btnReports.setFocusPainted(false);
+        btnReports.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnReports.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        btnReports.addActionListener(this);
         titleBar.add(btnReports);
+
+        btnSettings = new JButton("Settings");
+        btnSettings.setBackground(Color.WHITE);
+        btnSettings.setBorder(null);
+        btnSettings.setFocusPainted(false);
+        btnSettings.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnSettings.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        btnSettings.addActionListener(this);
         titleBar.add(btnSettings);
+
+        btnLogout = new JButton("Logout");
+        btnLogout.setBackground(Color.WHITE);
+        btnLogout.setBorder(null);
+        btnLogout.setFocusPainted(false);
+        btnLogout.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnLogout.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        btnLogout.addActionListener(this);
         titleBar.add(btnLogout);
 
         repositionTitleBar(getWidth());
@@ -127,39 +183,26 @@ public class AdminFrame extends JFrame implements ActionListener {
             return;
         }
 
+        titleBar.setBounds(0, 0, w, 32);
         closeBtn.setBounds(w - 40, 8, 28, 24);
-
-        if(titleBar != null){
-            titleBar.setBounds(0, 0, w, TITLEBAR_H);
-        }
 
         if(btnDashboard == null){
             return;
         }
 
-        int profW = NAV_BTN_W + 10;
-        int totalW = NAV_BTN_W * 8 + profW + NAV_BTN_GAP * 8;
-        int startX = (w - totalW) / 2;
+        int totalWidth = (80 * 8) + (90) + (6 * 8);
+        int startX = (w - totalWidth) / 2;
         int y = 8;
 
-        int x = startX;
-        btnDashboard.setBounds(x, y, NAV_BTN_W, NAV_BTN_H);
-        x += NAV_BTN_W + NAV_BTN_GAP;
-        btnUsers.setBounds(x, y, NAV_BTN_W, NAV_BTN_H);
-        x += NAV_BTN_W + NAV_BTN_GAP;
-        btnCourses.setBounds(x, y, NAV_BTN_W, NAV_BTN_H);
-        x += NAV_BTN_W + NAV_BTN_GAP;
-        btnSections.setBounds(x, y, NAV_BTN_W, NAV_BTN_H);
-        x += NAV_BTN_W + NAV_BTN_GAP;
-        btnProfessors.setBounds(x, y, profW, NAV_BTN_H);
-        x += profW + NAV_BTN_GAP;
-        btnStudents.setBounds(x, y, NAV_BTN_W, NAV_BTN_H);
-        x += NAV_BTN_W + NAV_BTN_GAP;
-        btnReports.setBounds(x, y, NAV_BTN_W, NAV_BTN_H);
-        x += NAV_BTN_W + NAV_BTN_GAP;
-        btnSettings.setBounds(x, y, NAV_BTN_W, NAV_BTN_H);
-        x += NAV_BTN_W + NAV_BTN_GAP;
-        btnLogout.setBounds(x, y, NAV_BTN_W, NAV_BTN_H);
+        btnDashboard.setBounds(startX, y, 80, 24);
+        btnUsers.setBounds(startX + 80 + 6, y, 80, 24);
+        btnCourses.setBounds(startX + (80 + 6) * 2, y, 80, 24);
+        btnSections.setBounds(startX + (80 + 6) * 3, y, 80, 24);
+        btnProfessors.setBounds(startX + (80 + 6) * 4, y, 90, 24);
+        btnStudents.setBounds(startX + (80 + 6) * 4 + 90 + 6, y, 80, 24);
+        btnReports.setBounds(startX + (80 + 6) * 4 + 90 + 6 + 80 + 6, y, 80, 24);
+        btnSettings.setBounds(startX + (80 + 6) * 4 + 90 + 6 + (80 + 6) * 2, y, 80, 24);
+        btnLogout.setBounds(startX + (80 + 6) * 4 + 90 + 6 + (80 + 6) * 3, y, 80, 24);
     }
 
     @Override
@@ -167,22 +210,11 @@ public class AdminFrame extends JFrame implements ActionListener {
         super.setBounds(x, y, w, h);
         repositionTitleBar(w);
         if(contentContainer != null){
-            contentContainer.setBounds(0, TITLEBAR_H, w, h - TITLEBAR_H);
+            contentContainer.setBounds(0, 32, w, h - 32);
         }
         if(currentPanel != null && contentContainer != null){
             currentPanel.setBounds(0, 0, contentContainer.getWidth(), contentContainer.getHeight());
         }
-    }
-
-    private JButton navButton(String text){
-        JButton btn = new JButton(text);
-        btn.setBackground(Color.WHITE);
-        btn.setBorder(null);
-        btn.setFocusPainted(false);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        btn.addActionListener(this);
-        return btn;
     }
 
     private void ContentContainer(){
