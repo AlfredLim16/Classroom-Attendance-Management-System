@@ -131,6 +131,7 @@ D:\Alfred Lim\Local Projects\Classroom-Attendance-Management-System\src\main\jav
 D:\Alfred Lim\Local Projects\Classroom-Attendance-Management-System\src\main\java\frames\ProfessorFrame.java
 D:\Alfred Lim\Local Projects\Classroom-Attendance-Management-System\src\main\java\lookup\QuizType.java
 D:\Alfred Lim\Local Projects\Classroom-Attendance-Management-System\src\main\java\dao\AttendancePolicyDAO.java
+D:\Alfred Lim\Local Projects\Classroom-Attendance-Management-System\src\main\java\services\QuizLabScheduleService.java
 D:\Alfred Lim\Local Projects\Classroom-Attendance-Management-System\src\main\java\panels\StudentAttendancePanel.java
 D:\Alfred Lim\Local Projects\Classroom-Attendance-Management-System\src\main\java\panels\ProfessorSectionsPanel.java
 D:\Alfred Lim\Local Projects\Classroom-Attendance-Management-System\src\main\java\charts\BarChartPanel.java

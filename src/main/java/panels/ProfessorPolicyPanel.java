@@ -1,10 +1,7 @@
 package panels;
 
 import core.Course;
-import junction.AttendancePolicy;
-import junction.ProfessorCourse;
-import services.AttendancePolicyService;
-import services.ProfessorCourseService;
+import core.Professor;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -26,7 +23,10 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import core.Professor;
+import junction.AttendancePolicy;
+import junction.ProfessorCourse;
+import services.AttendancePolicyService;
+import services.ProfessorCourseService;
 
 public class ProfessorPolicyPanel extends JPanel implements ActionListener {
 
@@ -145,7 +145,6 @@ public class ProfessorPolicyPanel extends JPanel implements ActionListener {
         btnSave.addActionListener(this);
         add(btnSave);
 
-        // Toggle Button - white outline
         btnToggle = new JButton("Toggle Active");
         btnToggle.setBounds(820, 122, 140, 36);
         btnToggle.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -157,7 +156,6 @@ public class ProfessorPolicyPanel extends JPanel implements ActionListener {
         btnToggle.addActionListener(this);
         add(btnToggle);
 
-        // Table columns
         String[] columns = {"Course", "Late Threshold", "Lates = Absent", "Absents = Dropped", "Active"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -177,14 +175,12 @@ public class ProfessorPolicyPanel extends JPanel implements ActionListener {
         policyTable.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(220, 220, 220)));
         policyTable.getTableHeader().setPreferredSize(new Dimension(policyTable.getPreferredSize().width, 28));
 
-        // Center all columns
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         for(int i = 0; i < policyTable.getColumnCount(); i++){
             policyTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
 
-        // ScrollPane - same as other panels
         scrollPane = new JScrollPane(policyTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
         scrollPane.getViewport().setBackground(Color.WHITE);

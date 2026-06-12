@@ -30,14 +30,10 @@ public class StudentFrame extends JFrame implements ActionListener {
     private JPanel currentPanel;
     private JPanel contentContainer;
     private JPanel titleBar;
+
     private Student currentStudent;
     private User currentUser;
     private final StudentService studentService = new StudentService();
-
-    private StudentProfilePanel profilePanel;
-    private StudentAttendancePanel attendancePanel;
-    private StudentExcusePanel excusePanel;
-    private StudentSchedulePanel schedulePanel;
 
     public StudentFrame(){
         ConfigureWindow();
@@ -49,38 +45,42 @@ public class StudentFrame extends JFrame implements ActionListener {
     public void setCurrentUser(User user){
         this.currentUser = user;
         if(currentUser != null){
-            var studentOpt = studentService.getStudentByUserId(currentUser.userId());
-            if(studentOpt.isPresent()){
-                this.currentStudent = studentOpt.get();
-                titleLabel.setText("Orange - Student | " + currentStudent.firstName() + " " + currentStudent.lastName());
-            }
+            studentService.getStudentByUserId(currentUser.userId()).ifPresent(s -> {
+                this.currentStudent = s;
+                titleLabel.setText("Orange - Student | " + s.firstName() + " " + s.lastName());
+            });
         }
+        showPanel(buildProfilePanel());
+    }
 
-        profilePanel = new StudentProfilePanel(currentStudent);
-        attendancePanel = new StudentAttendancePanel();
-        excusePanel = new StudentExcusePanel();
-        schedulePanel = new StudentSchedulePanel();
+    private StudentProfilePanel buildProfilePanel(){
+        return new StudentProfilePanel(currentStudent);
+    }
 
+    private StudentAttendancePanel buildAttendancePanel(){
+        StudentAttendancePanel panel = new StudentAttendancePanel();
         if(currentStudent != null){
-            attendancePanel.loadAttendanceForStudent(currentStudent.studentId());
-            excusePanel.setCurrentStudent(currentStudent);
-            excusePanel.setCurrentUser(currentUser);
-            excusePanel.loadExcuseHistory(currentStudent.studentId());
+            panel.loadAttendanceForStudent(currentStudent.studentId());
         }
-
-        showPanel(profilePanel);
+        return panel;
     }
 
-    public User getCurrentUser(){
-        return currentUser;
+    private StudentExcusePanel buildExcusePanel(){
+        StudentExcusePanel panel = new StudentExcusePanel();
+        if(currentStudent != null){
+            panel.setCurrentStudent(currentStudent);
+            panel.setCurrentUser(currentUser);
+            panel.loadExcuseHistory(currentStudent.studentId());
+        }
+        return panel;
     }
 
-    public Student getCurrentStudent(){
-        return currentStudent;
-    }
-
-    public StudentService getStudentService(){
-        return studentService;
+    private StudentSchedulePanel buildSchedulePanel(){
+        StudentSchedulePanel panel = new StudentSchedulePanel();
+        if(currentStudent != null){
+            panel.loadScheduleForStudent(currentStudent);
+        }
+        return panel;
     }
 
     private void ConfigureWindow(){
@@ -111,14 +111,12 @@ public class StudentFrame extends JFrame implements ActionListener {
         titleLabel = new JLabel("Orange - Student");
         titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         titleLabel.setForeground(new Color(60, 60, 60));
-        titleLabel.setBounds(40, 0, 200, 40);
+        titleLabel.setBounds(40, 0, 300, 40);
         titleBar.add(titleLabel);
 
         ImageIcon closeRaw = new ImageIcon(getClass().getResource("/icons/close.png"));
         Image closeScaled = closeRaw.getImage().getScaledInstance(18, 18, Image.SCALE_SMOOTH);
-
         closeBtn = new JButton(new ImageIcon(closeScaled));
-        closeBtn.setBounds(getWidth() - 40, 8, 28, 24);
         closeBtn.setBackground(Color.WHITE);
         closeBtn.setBorder(null);
         closeBtn.setFocusPainted(false);
@@ -126,76 +124,58 @@ public class StudentFrame extends JFrame implements ActionListener {
         closeBtn.addActionListener(this);
         titleBar.add(closeBtn);
 
-        btnProfile = new JButton("Profile");
-        btnProfile.setBackground(Color.WHITE);
-        btnProfile.setBorder(null);
-        btnProfile.setFocusPainted(false);
-        btnProfile.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnProfile.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        btnProfile.addActionListener(this);
+        btnProfile = navButton("Profile");
+        btnAttendance = navButton("Attendance");
+        btnExcused = navButton("Excuse Letter");
+        btnSchedule = navButton("Schedule");
+        btnLogout = navButton("Logout");
+
         titleBar.add(btnProfile);
-
-        btnAttendance = new JButton("Attendance");
-        btnAttendance.setBackground(Color.WHITE);
-        btnAttendance.setBorder(null);
-        btnAttendance.setFocusPainted(false);
-        btnAttendance.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnAttendance.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        btnAttendance.addActionListener(this);
         titleBar.add(btnAttendance);
-
-        btnExcused = new JButton("Excuse Letter");
-        btnExcused.setBackground(Color.WHITE);
-        btnExcused.setBorder(null);
-        btnExcused.setFocusPainted(false);
-        btnExcused.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnExcused.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        btnExcused.addActionListener(this);
         titleBar.add(btnExcused);
-
-        btnSchedule = new JButton("Schedule");
-        btnSchedule.setBackground(Color.WHITE);
-        btnSchedule.setBorder(null);
-        btnSchedule.setFocusPainted(false);
-        btnSchedule.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnSchedule.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        btnSchedule.addActionListener(this);
         titleBar.add(btnSchedule);
-
-        btnLogout = new JButton("Logout");
-        btnLogout.setBackground(Color.WHITE);
-        btnLogout.setBorder(null);
-        btnLogout.setFocusPainted(false);
-        btnLogout.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnLogout.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        btnLogout.addActionListener(this);
         titleBar.add(btnLogout);
 
         repositionTitleBar(getWidth());
         add(titleBar);
     }
 
+    private JButton navButton(String text){
+        JButton b = new JButton(text);
+        b.setBackground(Color.WHITE);
+        b.setBorder(null);
+        b.setFocusPainted(false);
+        b.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        b.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        b.addActionListener(this);
+        return b;
+    }
+
     private void repositionTitleBar(int w){
         if(closeBtn == null){
             return;
         }
-
         titleBar.setBounds(0, 0, w, 32);
         closeBtn.setBounds(w - 40, 8, 28, 24);
-
         if(btnProfile == null){
             return;
         }
 
-        int totalWidth = (80 * 5) + (10 * 4);
-        int startX = (w - totalWidth) / 2;
-        int y = 8;
+        int[] widths = {70, 90, 110, 80, 70};
+        int gap = 10;
+        int total = 0;
+        for(int ww : widths){
+            total += ww;
+        }
+        total += gap * (widths.length - 1);
 
-        btnProfile.setBounds(startX, y, 80, 24);
-        btnAttendance.setBounds(startX + 80 + 10, y, 80, 24);
-        btnExcused.setBounds(startX + (80 + 10) * 2, y, 80, 24);
-        btnSchedule.setBounds(startX + (80 + 10) * 3, y, 80, 24);
-        btnLogout.setBounds(startX + (80 + 10) * 4, y, 80, 24);
+        int x = (w - total) / 2;
+        int y = 8;
+        JButton[] btns = {btnProfile, btnAttendance, btnExcused, btnSchedule, btnLogout};
+        for(int i = 0; i < btns.length; i++){
+            btns[i].setBounds(x, y, widths[i], 24);
+            x += widths[i] + gap;
+        }
     }
 
     @Override
@@ -233,23 +213,17 @@ public class StudentFrame extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == closeBtn){
             System.exit(0);
-        }
-        if(e.getSource() == btnProfile){
-            showPanel(profilePanel);
-        }
-        if(e.getSource() == btnAttendance){
-            showPanel(attendancePanel);
-        }
-        if(e.getSource() == btnExcused){
-            showPanel(excusePanel);
-        }
-        if(e.getSource() == btnSchedule){
-            showPanel(schedulePanel);
-        }
-        if(e.getSource() == btnLogout){
+        }else if(e.getSource() == btnProfile){
+            showPanel(buildProfilePanel());
+        }else if(e.getSource() == btnAttendance){
+            showPanel(buildAttendancePanel());
+        }else if(e.getSource() == btnExcused){
+            showPanel(buildExcusePanel());
+        }else if(e.getSource() == btnSchedule){
+            showPanel(buildSchedulePanel());
+        }else if(e.getSource() == btnLogout){
             dispose();
-            LoginFrame loginFrame = new LoginFrame();
-            loginFrame.setVisible(true);
+            new LoginFrame().setVisible(true);
         }
     }
 }

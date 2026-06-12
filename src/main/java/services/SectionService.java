@@ -4,11 +4,10 @@ import core.*;
 import dao.*;
 import exceptions.DuplicateEntryException;
 import exceptions.NotFoundException;
-import lookup.YearLevel;
-
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import lookup.YearLevel;
 
 public class SectionService {
 
@@ -34,9 +33,7 @@ public class SectionService {
             Section section = Section.builder()
                 .program(program).yearLevel(yearLevel).sectionCode(sectionCode).build();
             sectionDAO.insert(section);
-            return sectionDAO.findAll().stream()
-                .filter(s -> s.sectionCode().equals(sectionCode))
-                .findFirst().orElse(null);
+            return sectionDAO.findAll().stream().filter(s -> s.sectionCode().equals(sectionCode)).findFirst().orElse(null);
         }catch(SQLException | DuplicateEntryException e){
             System.err.println("[SectionService] createSection: " + e.getMessage());
             return null;

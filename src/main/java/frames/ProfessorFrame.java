@@ -62,9 +62,7 @@ public class ProfessorFrame extends JFrame implements ActionListener {
                 }
             },
             () -> {
-                JOptionPane.showMessageDialog(this,
-                    "No professor record found for user: " + user.userName(),
-                    "Professor Lookup Failed", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No professor record found for user: " + user.userName(), "Professor Lookup Failed", JOptionPane.ERROR_MESSAGE);
             }
         );
     }

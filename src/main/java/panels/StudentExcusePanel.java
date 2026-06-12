@@ -4,19 +4,23 @@ import core.Course;
 import core.Student;
 import core.User;
 import junction.ExcuseLetter;
+import junction.StudentCourse;
 import lookup.ExcuseStatus;
-import services.CourseService;
 import services.ExcuseLetterServiceAdapter;
+import services.StudentCourseService;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -25,27 +29,34 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 public class StudentExcusePanel extends JPanel implements ActionListener {
 
-   private JLabel lblTitle, lblCourse, lblDate, lblReason, lblDocument;
-    private JTextField txtCourse, txtDate;
+    private JLabel lblTitle, lblCourse, lblDate, lblReason, lblDocument, lblHistory;
+    private JComboBox<String> cmbCourse;
+    private JTextField txtDate;
     private JTextArea txtReason;
     private JButton btnSubmit, btnBrowse;
     private JTable historyTable;
     private DefaultTableModel tableModel;
     private JScrollPane tableScroll, reasonScroll;
+
     private final ExcuseLetterServiceAdapter excuseLetterService = new ExcuseLetterServiceAdapter();
-    private final CourseService courseService = new CourseService();
+    private final StudentCourseService studentCourseService      = new StudentCourseService();
+
     private Student currentStudent;
     private User currentUser;
     private String selectedFilePath;
+    private final List<Course> enrolledCourses = new ArrayList<>();
 
     public StudentExcusePanel(){
         setLayout(null);
         setBackground(Color.WHITE);
-        setBounds(0, 32, 1200, 700);
 
         lblTitle = new JLabel("Excuse Letters");
         lblTitle.setBounds(40, 20, 300, 30);
@@ -59,32 +70,38 @@ public class StudentExcusePanel extends JPanel implements ActionListener {
         lblCourse.setForeground(new Color(80, 80, 80));
         add(lblCourse);
 
-        txtCourse = new JTextField();
-        txtCourse.setBounds(40, 92, 300, 36);
-        txtCourse.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        txtCourse.setForeground(new Color(60, 60, 60));
-        txtCourse.setBackground(Color.WHITE);
-        txtCourse.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
-        add(txtCourse);
+        cmbCourse = new JComboBox<>();
+        cmbCourse.setBounds(40, 92, 310, 36);
+        cmbCourse.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        cmbCourse.setBackground(Color.WHITE);
+        cmbCourse.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
+        cmbCourse.setFocusable(false);
+        cmbCourse.setRenderer(new BasicComboBoxRenderer(){
+            @Override
+            public java.awt.Component getListCellRendererComponent(
+                    javax.swing.JList list, Object value, int index,
+                    boolean isSelected, boolean cellHasFocus){
+                JLabel lbl = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                lbl.setBorder(new EmptyBorder(0, 10, 0, 0));
+                return lbl;
+            }
+        });
+        add(cmbCourse);
 
         lblDate = new JLabel("Absent Date (YYYY-MM-DD)");
-        lblDate.setBounds(360, 70, 200, 20);
+        lblDate.setBounds(370, 70, 200, 20);
         lblDate.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         lblDate.setForeground(new Color(80, 80, 80));
         add(lblDate);
 
-        txtDate = new JTextField();
-        txtDate.setBounds(360, 92, 200, 36);
+        txtDate = new JTextField(LocalDate.now().toString());
+        txtDate.setBounds(370, 92, 200, 36);
         txtDate.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         txtDate.setForeground(new Color(60, 60, 60));
         txtDate.setBackground(Color.WHITE);
         txtDate.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
+            BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         add(txtDate);
 
         lblReason = new JLabel("Reason");
@@ -100,12 +117,12 @@ public class StudentExcusePanel extends JPanel implements ActionListener {
         txtReason.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
 
         reasonScroll = new JScrollPane(txtReason);
-        reasonScroll.setBounds(40, 167, 520, 100);
+        reasonScroll.setBounds(40, 167, 530, 100);
         reasonScroll.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
         add(reasonScroll);
 
         lblDocument = new JLabel("Supporting Document (Optional)");
-        lblDocument.setBounds(40, 280, 250, 20);
+        lblDocument.setBounds(40, 280, 300, 20);
         lblDocument.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         lblDocument.setForeground(new Color(80, 80, 80));
         add(lblDocument);
@@ -132,140 +149,134 @@ public class StudentExcusePanel extends JPanel implements ActionListener {
         btnSubmit.addActionListener(this);
         add(btnSubmit);
 
-        JLabel lblHistory = new JLabel("Submission History");
+        lblHistory = new JLabel("Submission History");
         lblHistory.setBounds(40, 420, 300, 30);
         lblHistory.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblHistory.setForeground(new Color(60, 60, 60));
         add(lblHistory);
 
-        String[] columns = {"Date", "Course", "Reason", "Status", "Reviewed By"};
-        tableModel = new DefaultTableModel(columns, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column){
-                return false;
-            }
+        String[] columns = {"Absent Date", "Course", "Reason", "Status", "Reviewed By"};
+        tableModel = new DefaultTableModel(columns, 0){
+            @Override public boolean isCellEditable(int row, int column){ return false; }
         };
 
         historyTable = new JTable(tableModel);
         historyTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         historyTable.setRowHeight(32);
         historyTable.setShowGrid(false);
-        historyTable.setIntercellSpacing(new java.awt.Dimension(0, 0));
+        historyTable.setIntercellSpacing(new Dimension(0, 0));
         historyTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
         historyTable.getTableHeader().setBackground(new Color(250, 250, 250));
         historyTable.getTableHeader().setForeground(new Color(60, 60, 60));
         historyTable.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(220, 220, 220)));
 
+        DefaultTableCellRenderer center = new DefaultTableCellRenderer();
+        center.setHorizontalAlignment(SwingConstants.CENTER);
+        for(int i = 0; i < historyTable.getColumnCount(); i++){
+            historyTable.getColumnModel().getColumn(i).setCellRenderer(center);
+        }
+
         tableScroll = new JScrollPane(historyTable);
-        tableScroll.setBounds(40, 460, 800, 200);
         tableScroll.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
         tableScroll.getViewport().setBackground(Color.WHITE);
         add(tableScroll);
     }
 
-    public void loadExcuseHistory(int studentId) {
+    public void setCurrentStudent(Student student){
+        this.currentStudent = student;
+        loadEnrolledCourses();
+    }
+
+    public void setCurrentUser(User user){
+        this.currentUser = user;
+    }
+
+    private void loadEnrolledCourses(){
+        cmbCourse.removeAllItems();
+        enrolledCourses.clear();
+        if(currentStudent == null) return;
+        cmbCourse.addItem("Select Course");
+        List<StudentCourse> enrollments = studentCourseService.getCoursesByStudent(currentStudent.studentId());
+        for(StudentCourse sc : enrollments){
+            cmbCourse.addItem(sc.course().courseCode() + " - " + sc.course().courseName());
+            enrolledCourses.add(sc.course());
+        }
+    }
+
+    public void loadExcuseHistory(int studentId){
         tableModel.setRowCount(0);
         List<ExcuseLetter> excuses = excuseLetterService.getExcuseLettersByStudent(studentId);
-        for (ExcuseLetter e : excuses) {
-            String date = e.absentDate().toString();
-            String course = e.course().courseCode();
-            String reason = e.reason().length() > 30 ? e.reason().substring(0, 30) + "..." : e.reason();
-            String status = e.status().getExcuseStatusName();
-            String reviewedBy = e.reviewedBy() != null ? e.reviewedBy().userName() : "Pending";
-            addHistoryRow(date, course, reason, status, reviewedBy);
+        for(ExcuseLetter e : excuses){
+            String reason = e.reason().length() > 40 ? e.reason().substring(0, 40) + "..." : e.reason();
+            tableModel.addRow(new Object[]{
+                e.absentDate().toString(),
+                e.course().courseCode(),
+                reason,
+                e.status().getExcuseStatusName(),
+                e.reviewedBy() != null ? e.reviewedBy().userName() : "Pending"
+            });
         }
     }
 
-    public void addHistoryRow(String date, String course, String reason, String status, String reviewedBy){
-        tableModel.addRow(new Object[]{date, course, reason, status, reviewedBy});
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e){
-        if(e.getSource() == btnBrowse){
-            JFileChooser fileChooser = new JFileChooser();
-            int result = fileChooser.showOpenDialog(this);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                selectedFilePath = fileChooser.getSelectedFile().getAbsolutePath();
-                lblDocument.setText("Selected: " + fileChooser.getSelectedFile().getName());
-            }
-        }
-        if(e.getSource() == btnSubmit){
-            submitExcuseLetter();
-        }
-    }
-
-    private void submitExcuseLetter() {
-        if (currentStudent == null || currentUser == null) {
-            JOptionPane.showMessageDialog(this, "Student not loaded properly", "Error", JOptionPane.ERROR_MESSAGE);
+    private void submitExcuseLetter(){
+        if(currentStudent == null || currentUser == null){
+            JOptionPane.showMessageDialog(this, "Student not loaded properly.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        String courseCode = txtCourse.getText().trim();
+        if(cmbCourse.getSelectedIndex() <= 0){
+            JOptionPane.showMessageDialog(this, "Please select a course.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         String dateStr = txtDate.getText().trim();
-        String reason = txtReason.getText().trim();
+        String reason  = txtReason.getText().trim();
 
-        if (courseCode.isEmpty() || dateStr.isEmpty() || reason.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill in all required fields", "Validation Error", JOptionPane.WARNING_MESSAGE);
+        if(dateStr.isEmpty() || reason.isEmpty()){
+            JOptionPane.showMessageDialog(this, "Please fill in all required fields.", "Validation Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        try {
+        try{
             LocalDate absentDate = LocalDate.parse(dateStr);
-            List<Course> courses = courseService.getAllCourses();
-            Course selectedCourse = null;
-            for (Course c : courses) {
-                if (c.courseCode().equalsIgnoreCase(courseCode)) {
-                    selectedCourse = c;
-                    break;
-                }
-            }
-
-            if (selectedCourse == null) {
-                JOptionPane.showMessageDialog(this, "Course not found: " + courseCode, "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+            Course selectedCourse = enrolledCourses.get(cmbCourse.getSelectedIndex() - 1);
 
             ExcuseLetter letter = excuseLetterService.submitExcuseLetter(
-                currentStudent,
-                selectedCourse,
-                absentDate,
-                reason,
-                selectedFilePath,
-                ExcuseStatus.PENDING,
-                LocalDateTime.now()
-            );
+                currentStudent, selectedCourse, absentDate, reason,
+                selectedFilePath, ExcuseStatus.PENDING, LocalDateTime.now());
 
-            if (letter != null) {
+            if(letter != null){
                 JOptionPane.showMessageDialog(this, "Excuse letter submitted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                txtCourse.setText("");
-                txtDate.setText("");
+                cmbCourse.setSelectedIndex(0);
+                txtDate.setText(LocalDate.now().toString());
                 txtReason.setText("");
                 selectedFilePath = null;
                 lblDocument.setText("Supporting Document (Optional)");
                 loadExcuseHistory(currentStudent.studentId());
             }
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Invalid date format. Use YYYY-MM-DD", "Error", JOptionPane.ERROR_MESSAGE);
+        }catch(Exception ex){
+            JOptionPane.showMessageDialog(this, "Invalid date format. Use YYYY-MM-DD.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public JTextField getCourseField(){
-        return txtCourse;
-    }
-    public JTextField getDateField(){
-        return txtDate;
-    }
-    public JTextArea getReasonArea(){
-        return txtReason;
+    @Override
+    public void setBounds(int x, int y, int width, int height){
+        super.setBounds(x, y, width, height);
+        if(width > 0 && height > 0 && tableScroll != null){
+            tableScroll.setBounds(40, 460, width - 80, height - 480);
+        }
     }
 
-    public void setCurrentStudent(Student student){
-        this.currentStudent = student;
-    }
-
-    public void setCurrentUser(User user){
-        this.currentUser = user;
+    @Override
+    public void actionPerformed(ActionEvent e){
+        if(e.getSource() == btnBrowse){
+            JFileChooser chooser = new JFileChooser();
+            if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
+                selectedFilePath = chooser.getSelectedFile().getAbsolutePath();
+                lblDocument.setText("Selected: " + chooser.getSelectedFile().getName());
+            }
+        } else if(e.getSource() == btnSubmit){
+            submitExcuseLetter();
+        }
     }
 }

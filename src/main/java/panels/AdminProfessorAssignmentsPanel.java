@@ -43,7 +43,7 @@ import services.SemesterService;
 public class AdminProfessorAssignmentsPanel extends JPanel implements ActionListener {
 
     private static final String CARD_SECTIONS = "SECTIONS";
-    private static final String CARD_COURSES  = "COURSES";
+    private static final String CARD_COURSES = "COURSES";
 
     private JPanel tabBar;
     private JButton btnTabSections, btnTabCourses;
@@ -67,17 +67,17 @@ public class AdminProfessorAssignmentsPanel extends JPanel implements ActionList
     private DefaultTableModel crsModel;
     private JScrollPane crsScroll;
 
-    private final ProfessorService professorService         = new ProfessorService();
-    private final ProfessorSectionService sectionAssignSvc  = new ProfessorSectionService();
-    private final ProfessorCourseService courseAssignSvc    = new ProfessorCourseService();
-    private final SectionService sectionService             = new SectionService();
-    private final CourseService courseService               = new CourseService();
-    private final SemesterService semesterService           = new SemesterService();
+    private final ProfessorService professorService = new ProfessorService();
+    private final ProfessorSectionService sectionAssignSvc = new ProfessorSectionService();
+    private final ProfessorCourseService courseAssignSvc = new ProfessorCourseService();
+    private final SectionService sectionService = new SectionService();
+    private final CourseService courseService = new CourseService();
+    private final SemesterService semesterService = new SemesterService();
 
-    private final Map<Integer, Integer> secCmbIndexToId  = new HashMap<>();
-    private final Map<Integer, Integer> crsCmbIndexToId  = new HashMap<>();
-    private final List<ProfessorSection> secRows         = new ArrayList<>();
-    private final List<ProfessorCourse>  crsRows         = new ArrayList<>();
+    private final Map<Integer, Integer> secCmbIndexToId = new HashMap<>();
+    private final Map<Integer, Integer> crsCmbIndexToId = new HashMap<>();
+    private final List<ProfessorSection> secRows = new ArrayList<>();
+    private final List<ProfessorCourse> crsRows = new ArrayList<>();
 
     public AdminProfessorAssignmentsPanel(){
         setLayout(null);
@@ -117,14 +117,14 @@ public class AdminProfessorAssignmentsPanel extends JPanel implements ActionList
 
     private void switchTab(String card){
         ((CardLayout) cardHost.getLayout()).show(cardHost, card);
-        Color active   = new Color(255, 140, 0);
+        Color active = new Color(255, 140, 0);
         Color inactive = new Color(200, 200, 200);
         if(CARD_SECTIONS.equals(card)){
             btnTabSections.setForeground(active);
             btnTabSections.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, active));
             btnTabCourses.setForeground(new Color(100, 100, 100));
             btnTabCourses.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, inactive));
-        } else {
+        }else{
             btnTabCourses.setForeground(active);
             btnTabCourses.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, active));
             btnTabSections.setForeground(new Color(100, 100, 100));
@@ -173,8 +173,11 @@ public class AdminProfessorAssignmentsPanel extends JPanel implements ActionList
         sectionsCard.add(btnSecUnassign);
 
         String[] cols = {"Section Code", "Program", "Year Level", "Semester"};
-        secModel = new DefaultTableModel(cols, 0){
-            @Override public boolean isCellEditable(int r, int c){ return false; }
+        secModel = new DefaultTableModel(cols, 0) {
+            @Override
+            public boolean isCellEditable(int r, int c){
+                return false;
+            }
         };
         secTable = buildTable(secModel);
         secScroll = buildScroll(secTable);
@@ -218,8 +221,11 @@ public class AdminProfessorAssignmentsPanel extends JPanel implements ActionList
         coursesCard.add(btnCrsUnassign);
 
         String[] cols = {"Course Code", "Course Name", "Program", "Semester"};
-        crsModel = new DefaultTableModel(cols, 0){
-            @Override public boolean isCellEditable(int r, int c){ return false; }
+        crsModel = new DefaultTableModel(cols, 0) {
+            @Override
+            public boolean isCellEditable(int r, int c){
+                return false;
+            }
         };
         crsTable = buildTable(crsModel);
         crsScroll = buildScroll(crsTable);
@@ -240,7 +246,9 @@ public class AdminProfessorAssignmentsPanel extends JPanel implements ActionList
     private void loadSectionAssignments(){
         secRows.clear();
         secModel.setRowCount(0);
-        if(cmbSecProfessor.getSelectedIndex() <= 0) return;
+        if(cmbSecProfessor.getSelectedIndex() <= 0){
+            return;
+        }
         int professorId = secCmbIndexToId.get(cmbSecProfessor.getSelectedIndex());
         List<ProfessorSection> assignments = sectionAssignSvc.getSectionsByProfessor(professorId);
         for(ProfessorSection ps : assignments){
@@ -257,7 +265,9 @@ public class AdminProfessorAssignmentsPanel extends JPanel implements ActionList
     private void loadCourseAssignments(){
         crsRows.clear();
         crsModel.setRowCount(0);
-        if(cmbCrsProfessor.getSelectedIndex() <= 0) return;
+        if(cmbCrsProfessor.getSelectedIndex() <= 0){
+            return;
+        }
         int professorId = crsCmbIndexToId.get(cmbCrsProfessor.getSelectedIndex());
         List<ProfessorCourse> assignments = courseAssignSvc.getCoursesByProfessor(professorId);
         for(ProfessorCourse pc : assignments){
@@ -279,7 +289,9 @@ public class AdminProfessorAssignmentsPanel extends JPanel implements ActionList
         int professorId = secCmbIndexToId.get(cmbSecProfessor.getSelectedIndex());
         Professor professor = professorService.getAllProfessors().stream()
             .filter(p -> p.professorId() == professorId).findFirst().orElse(null);
-        if(professor == null) return;
+        if(professor == null){
+            return;
+        }
 
         List<Section> sections = sectionService.getAllSections();
         List<Semester> semesters = semesterService.getAllSemesters();
@@ -375,13 +387,15 @@ public class AdminProfessorAssignmentsPanel extends JPanel implements ActionList
         btnSave.addActionListener(ev -> {
             Section section = sectionMap.get(cmbSection.getSelectedIndex());
             Semester semester = semesterMap.get(cmbSemester.getSelectedIndex());
-            if(section == null || semester == null) return;
+            if(section == null || semester == null){
+                return;
+            }
             boolean ok = sectionAssignSvc.assignSection(professor, section, semester);
             if(ok){
                 JOptionPane.showMessageDialog(dialog, "Section assigned successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 dialog.dispose();
                 loadSectionAssignments();
-            } else {
+            }else{
                 JOptionPane.showMessageDialog(dialog, "Failed to assign. This professor may already be assigned to that section in the same semester.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -398,7 +412,9 @@ public class AdminProfessorAssignmentsPanel extends JPanel implements ActionList
         int professorId = crsCmbIndexToId.get(cmbCrsProfessor.getSelectedIndex());
         Professor professor = professorService.getAllProfessors().stream()
             .filter(p -> p.professorId() == professorId).findFirst().orElse(null);
-        if(professor == null) return;
+        if(professor == null){
+            return;
+        }
 
         List<Course> courses = courseService.getAllCourses();
         List<Semester> semesters = semesterService.getAllSemesters();
@@ -494,13 +510,15 @@ public class AdminProfessorAssignmentsPanel extends JPanel implements ActionList
         btnSave.addActionListener(ev -> {
             Course course = courseMap.get(cmbCourse.getSelectedIndex());
             Semester semester = semesterMap.get(cmbSemester.getSelectedIndex());
-            if(course == null || semester == null) return;
+            if(course == null || semester == null){
+                return;
+            }
             boolean ok = courseAssignSvc.assignCourse(professor, course, semester);
             if(ok){
                 JOptionPane.showMessageDialog(dialog, "Course assigned successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 dialog.dispose();
                 loadCourseAssignments();
-            } else {
+            }else{
                 JOptionPane.showMessageDialog(dialog, "Failed to assign. This professor may already be assigned to that course in the same semester.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -523,7 +541,7 @@ public class AdminProfessorAssignmentsPanel extends JPanel implements ActionList
             boolean ok = sectionAssignSvc.unassignSection(ps.professorSectionId());
             if(ok){
                 loadSectionAssignments();
-            } else {
+            }else{
                 JOptionPane.showMessageDialog(this, "Failed to remove assignment.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -543,7 +561,7 @@ public class AdminProfessorAssignmentsPanel extends JPanel implements ActionList
             boolean ok = courseAssignSvc.unassignCourse(pc.professorCourseId());
             if(ok){
                 loadCourseAssignments();
-            } else {
+            }else{
                 JOptionPane.showMessageDialog(this, "Failed to remove assignment.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -555,11 +573,11 @@ public class AdminProfessorAssignmentsPanel extends JPanel implements ActionList
         c.setBackground(Color.WHITE);
         c.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
         c.setFocusable(false);
-        c.setRenderer(new BasicComboBoxRenderer(){
+        c.setRenderer(new BasicComboBoxRenderer() {
             @Override
             public java.awt.Component getListCellRendererComponent(
-                    javax.swing.JList list, Object value, int index,
-                    boolean isSelected, boolean cellHasFocus){
+                javax.swing.JList list, Object value, int index,
+                boolean isSelected, boolean cellHasFocus){
                 JLabel lbl = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 lbl.setBorder(new EmptyBorder(0, 10, 0, 0));
                 return lbl;
@@ -606,7 +624,9 @@ public class AdminProfessorAssignmentsPanel extends JPanel implements ActionList
     @Override
     public void setBounds(int x, int y, int width, int height){
         super.setBounds(x, y, width, height);
-        if(width <= 0 || height <= 0) return;
+        if(width <= 0 || height <= 0){
+            return;
+        }
 
         int tabH = 44;
         tabBar.setBounds(0, 0, width, tabH);
@@ -657,11 +677,18 @@ public class AdminProfessorAssignmentsPanel extends JPanel implements ActionList
 
     @Override
     public void actionPerformed(ActionEvent e){
-        if(e.getSource() == btnSecLoad)      loadSectionAssignments();
-        else if(e.getSource() == btnSecAssign)   showAssignSectionDialog();
-        else if(e.getSource() == btnSecUnassign) unassignSection();
-        else if(e.getSource() == btnCrsLoad)     loadCourseAssignments();
-        else if(e.getSource() == btnCrsAssign)   showAssignCourseDialog();
-        else if(e.getSource() == btnCrsUnassign) unassignCourse();
+        if(e.getSource() == btnSecLoad){
+            loadSectionAssignments();
+        }else if(e.getSource() == btnSecAssign){
+            showAssignSectionDialog();
+        }else if(e.getSource() == btnSecUnassign){
+            unassignSection();
+        }else if(e.getSource() == btnCrsLoad){
+            loadCourseAssignments();
+        }else if(e.getSource() == btnCrsAssign){
+            showAssignCourseDialog();
+        }else if(e.getSource() == btnCrsUnassign){
+            unassignCourse();
+        }
     }
 }

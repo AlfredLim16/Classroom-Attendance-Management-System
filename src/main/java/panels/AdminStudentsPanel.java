@@ -546,9 +546,7 @@ public class AdminStudentsPanel extends JPanel implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Please select a student from the table.", "No Selection", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            int confirm = JOptionPane.showConfirmDialog(this,
-                "Delete student: " + selected.firstName() + " " + selected.lastName() + "?\n\nThis action cannot be undone.",
-                "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            int confirm = JOptionPane.showConfirmDialog(this, "Delete student: " + selected.firstName() + " " + selected.lastName() + "?\n\nThis action cannot be undone.", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if(confirm == JOptionPane.YES_OPTION){
                 boolean success = studentService.deleteStudent(selected.studentId());
                 if(success){

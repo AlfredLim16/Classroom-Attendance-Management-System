@@ -215,10 +215,7 @@ public class AdminProfessorsPanel extends JPanel implements ActionListener {
         JTextField txtUser = new JTextField(isEdit ? professor.user().userName() : "");
         txtUser.setBounds(150, y, 260, 32);
         txtUser.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtUser.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
+        txtUser.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         dialog.add(txtUser);
         y += gap;
 
@@ -232,10 +229,7 @@ public class AdminProfessorsPanel extends JPanel implements ActionListener {
             JPasswordField txtPass = new JPasswordField();
             txtPass.setBounds(150, y, 260, 32);
             txtPass.setFont(new Font("Arial", Font.PLAIN, 13));
-            txtPass.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-                BorderFactory.createEmptyBorder(4, 8, 4, 8)
-            ));
+            txtPass.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
             dialog.add(txtPass);
             y += gap;
         }
@@ -321,7 +315,9 @@ public class AdminProfessorsPanel extends JPanel implements ActionListener {
             String fname = txtFname.getText().trim();
             String lname = txtLname.getText().trim();
             String mname = txtMname.getText().trim();
-            if(mname.isEmpty()) mname = null;
+            if(mname.isEmpty()){
+                mname = null;
+            }
             String typeName = cmbType.getSelectedItem().toString();
 
             if(username.isEmpty() || fname.isEmpty() || lname.isEmpty()){
@@ -330,10 +326,14 @@ public class AdminProfessorsPanel extends JPanel implements ActionListener {
             }
 
             ProfessorType pType = switch(typeName){
-                case "Faculty" -> ProfessorType.FACULTY;
-                case "Full-time" -> ProfessorType.FULL_TIME;
-                case "Part-time" -> ProfessorType.PART_TIME;
-                default -> ProfessorType.FACULTY;
+                case "Faculty" ->
+                    ProfessorType.FACULTY;
+                case "Full-time" ->
+                    ProfessorType.FULL_TIME;
+                case "Part-time" ->
+                    ProfessorType.PART_TIME;
+                default ->
+                    ProfessorType.FACULTY;
             };
 
             boolean success;
@@ -342,7 +342,7 @@ public class AdminProfessorsPanel extends JPanel implements ActionListener {
                 userService.updateUser(updatedUser);
                 Professor updated = new Professor(professor.professorId(), updatedUser, fname, mname, lname, pType);
                 success = professorService.updateProfessor(updated);
-            } else {
+            }else{
                 java.awt.Component[] comps = dialog.getContentPane().getComponents();
                 String password = "";
                 for(java.awt.Component c : comps){
@@ -370,7 +370,7 @@ public class AdminProfessorsPanel extends JPanel implements ActionListener {
                     "Success", JOptionPane.INFORMATION_MESSAGE);
                 dialog.dispose();
                 loadProfessors();
-            } else {
+            }else{
                 JOptionPane.showMessageDialog(dialog, "Failed to save professor.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -422,11 +422,16 @@ public class AdminProfessorsPanel extends JPanel implements ActionListener {
             boolean match = false;
             String fullName = p.getFullName().toLowerCase();
             switch(filter){
-                case "ID" -> match = String.valueOf(p.professorId()).contains(query);
-                case "Name" -> match = fullName.contains(query);
-                case "Type" -> match = p.professorType().getProfessorTypeName().toLowerCase().contains(query);
-                case "Username" -> match = p.user().userName().toLowerCase().contains(query);
-                default -> match = String.valueOf(p.professorId()).contains(query) || fullName.contains(query) || p.professorType().getProfessorTypeName().toLowerCase().contains(query) || p.user().userName().toLowerCase().contains(query);
+                case "ID" ->
+                    match = String.valueOf(p.professorId()).contains(query);
+                case "Name" ->
+                    match = fullName.contains(query);
+                case "Type" ->
+                    match = p.professorType().getProfessorTypeName().toLowerCase().contains(query);
+                case "Username" ->
+                    match = p.user().userName().toLowerCase().contains(query);
+                default ->
+                    match = String.valueOf(p.professorId()).contains(query) || fullName.contains(query) || p.professorType().getProfessorTypeName().toLowerCase().contains(query) || p.user().userName().toLowerCase().contains(query);
             }
             if(match){
                 addProfessorRow(String.valueOf(p.professorId()), p.getFullName(),
@@ -464,7 +469,7 @@ public class AdminProfessorsPanel extends JPanel implements ActionListener {
                     userService.deleteUser(selected.user().userId());
                     JOptionPane.showMessageDialog(this, "Professor deleted successfully.", "Deleted", JOptionPane.INFORMATION_MESSAGE);
                     loadProfessors();
-                } else {
+                }else{
                     JOptionPane.showMessageDialog(this, "Failed to delete professor. Professor may be referenced by other records.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }

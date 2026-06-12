@@ -51,4 +51,14 @@ public class ClassSessionManagementService {
             return null;
         }
     }
+
+    public boolean deleteSession(int sessionId){
+        try{
+            sessionDAO.delete(sessionId);
+            return true;
+        }catch(SQLException | exceptions.NotFoundException e){
+            System.err.println("[ClassSessionManagementService] deleteSession: " + e.getMessage());
+            return false;
+        }
+    }
 }

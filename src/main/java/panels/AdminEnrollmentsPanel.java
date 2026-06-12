@@ -43,12 +43,11 @@ import services.StudentService;
 public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
 
     private static final String CARD_ENROLLMENT = "ENROLLMENT";
-    private static final String CARD_SECRETARY  = "SECRETARY";
+    private static final String CARD_SECRETARY = "SECRETARY";
 
     private JPanel tabBar;
     private JButton btnTabEnroll, btnTabSecretary;
     private JPanel cardHost;
-
     private JPanel enrollCard;
     private JLabel lblEnrTitle, lblEnrSub;
     private JSeparator enrSep;
@@ -57,7 +56,6 @@ public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
     private JTable enrTable;
     private DefaultTableModel enrModel;
     private JScrollPane enrScroll;
-
     private JPanel secretaryCard;
     private JLabel lblSecTitle, lblSecSub;
     private JSeparator secSep;
@@ -67,17 +65,17 @@ public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
     private DefaultTableModel secModel;
     private JScrollPane secScroll;
 
-    private final StudentService studentService         = new StudentService();
-    private final CourseService courseService           = new CourseService();
-    private final SemesterService semesterService       = new SemesterService();
-    private final SectionService sectionService         = new SectionService();
-    private final StudentCourseService enrollService    = new StudentCourseService();
-    private final SecretaryService secretaryService     = new SecretaryService();
+    private final StudentService studentService = new StudentService();
+    private final CourseService courseService = new CourseService();
+    private final SemesterService semesterService = new SemesterService();
+    private final SectionService sectionService = new SectionService();
+    private final StudentCourseService enrollService = new StudentCourseService();
+    private final SecretaryService secretaryService = new SecretaryService();
 
-    private final Map<Integer, Integer> enrStudentCmbMap  = new HashMap<>();
-    private final Map<Integer, Integer> secSectionCmbMap  = new HashMap<>();
-    private final List<StudentCourse> enrRows             = new ArrayList<>();
-    private final List<Secretary>     secRows             = new ArrayList<>();
+    private final Map<Integer, Integer> enrStudentCmbMap = new HashMap<>();
+    private final Map<Integer, Integer> secSectionCmbMap = new HashMap<>();
+    private final List<StudentCourse> enrRows = new ArrayList<>();
+    private final List<Secretary> secRows = new ArrayList<>();
 
     public AdminEnrollmentsPanel(){
         setLayout(null);
@@ -117,14 +115,14 @@ public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
 
     private void switchTab(String card){
         ((CardLayout) cardHost.getLayout()).show(cardHost, card);
-        Color active   = new Color(255, 140, 0);
+        Color active = new Color(255, 140, 0);
         Color inactive = new Color(200, 200, 200);
         if(CARD_ENROLLMENT.equals(card)){
             btnTabEnroll.setForeground(active);
             btnTabEnroll.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, active));
             btnTabSecretary.setForeground(new Color(100, 100, 100));
             btnTabSecretary.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, inactive));
-        } else {
+        }else{
             btnTabSecretary.setForeground(active);
             btnTabSecretary.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, active));
             btnTabEnroll.setForeground(new Color(100, 100, 100));
@@ -173,8 +171,11 @@ public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
         enrollCard.add(btnEnrUnenroll);
 
         String[] cols = {"Course Code", "Course Name", "Program", "Semester"};
-        enrModel = new DefaultTableModel(cols, 0){
-            @Override public boolean isCellEditable(int r, int c){ return false; }
+        enrModel = new DefaultTableModel(cols, 0) {
+            @Override
+            public boolean isCellEditable(int r, int c){
+                return false;
+            }
         };
         enrTable = buildTable(enrModel);
         enrScroll = buildScroll(enrTable);
@@ -218,8 +219,11 @@ public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
         secretaryCard.add(btnSecRemove);
 
         String[] cols = {"Student No.", "Name", "Section"};
-        secModel = new DefaultTableModel(cols, 0){
-            @Override public boolean isCellEditable(int r, int c){ return false; }
+        secModel = new DefaultTableModel(cols, 0) {
+            @Override
+            public boolean isCellEditable(int r, int c){
+                return false;
+            }
         };
         secTable = buildTable(secModel);
         secScroll = buildScroll(secTable);
@@ -249,7 +253,9 @@ public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
     private void loadEnrollments(){
         enrRows.clear();
         enrModel.setRowCount(0);
-        if(cmbEnrStudent.getSelectedIndex() <= 0) return;
+        if(cmbEnrStudent.getSelectedIndex() <= 0){
+            return;
+        }
         int studentId = enrStudentCmbMap.get(cmbEnrStudent.getSelectedIndex());
         List<StudentCourse> list = enrollService.getCoursesByStudent(studentId);
         for(StudentCourse sc : list){
@@ -266,7 +272,9 @@ public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
     private void loadSecretaries(){
         secRows.clear();
         secModel.setRowCount(0);
-        if(cmbSecSection.getSelectedIndex() <= 0) return;
+        if(cmbSecSection.getSelectedIndex() <= 0){
+            return;
+        }
         int sectionId = secSectionCmbMap.get(cmbSecSection.getSelectedIndex());
         List<Secretary> list = secretaryService.getSecretariesBySection(sectionId);
         for(Secretary s : list){
@@ -287,7 +295,9 @@ public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
         int studentId = enrStudentCmbMap.get(cmbEnrStudent.getSelectedIndex());
         Student student = studentService.getAllStudents().stream()
             .filter(s -> s.studentId() == studentId).findFirst().orElse(null);
-        if(student == null) return;
+        if(student == null){
+            return;
+        }
 
         List<Course> courses = courseService.getAllCourses();
         List<Semester> semesters = semesterService.getAllSemesters();
@@ -383,13 +393,15 @@ public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
         btnSave.addActionListener(ev -> {
             Course course = courseMap.get(cmbCourse.getSelectedIndex());
             Semester semester = semesterMap.get(cmbSemester.getSelectedIndex());
-            if(course == null || semester == null) return;
+            if(course == null || semester == null){
+                return;
+            }
             boolean ok = enrollService.enrollStudent(student, course, semester);
             if(ok){
                 JOptionPane.showMessageDialog(dialog, "Student enrolled successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 dialog.dispose();
                 loadEnrollments();
-            } else {
+            }else{
                 JOptionPane.showMessageDialog(dialog, "Failed to enroll. Student may already be enrolled in this course for the same semester.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -405,14 +417,12 @@ public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
             return;
         }
         StudentCourse sc = enrRows.get(row);
-        int confirm = JOptionPane.showConfirmDialog(this,
-            "Remove " + sc.student().getFullName() + " from " + sc.course().courseCode() + "?",
-            "Confirm Remove", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        int confirm = JOptionPane.showConfirmDialog(this, "Remove " + sc.student().getFullName() + " from " + sc.course().courseCode() + "?", "Confirm Remove", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
         if(confirm == JOptionPane.YES_OPTION){
             boolean ok = enrollService.unenrollStudent(sc.studentCourseId());
             if(ok){
                 loadEnrollments();
-            } else {
+            }else{
                 JOptionPane.showMessageDialog(this, "Failed to remove enrollment.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -424,13 +434,12 @@ public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
             return;
         }
         int sectionId = secSectionCmbMap.get(cmbSecSection.getSelectedIndex());
-        Section section = sectionService.getAllSections().stream()
-            .filter(s -> s.sectionId() == sectionId).findFirst().orElse(null);
-        if(section == null) return;
+        Section section = sectionService.getAllSections().stream().filter(s -> s.sectionId() == sectionId).findFirst().orElse(null);
+        if(section == null){
+            return;
+        }
 
-        List<Student> students = studentService.getAllStudents().stream()
-            .filter(s -> s.section().sectionId() == sectionId)
-            .toList();
+        List<Student> students = studentService.getAllStudents().stream().filter(s -> s.section().sectionId() == sectionId).toList();
 
         if(students.isEmpty()){
             JOptionPane.showMessageDialog(this, "No students found in this section.", "No Students", JOptionPane.INFORMATION_MESSAGE);
@@ -503,13 +512,15 @@ public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
         btnSave.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnSave.addActionListener(ev -> {
             Student student = studentMap.get(cmbStudent.getSelectedIndex());
-            if(student == null) return;
+            if(student == null){
+                return;
+            }
             boolean ok = secretaryService.assignSecretary(student, section);
             if(ok){
                 JOptionPane.showMessageDialog(dialog, "Secretary assigned successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 dialog.dispose();
                 loadSecretaries();
-            } else {
+            }else{
                 JOptionPane.showMessageDialog(dialog, "Failed to assign. This student may already be a secretary.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -532,7 +543,7 @@ public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
             boolean ok = secretaryService.removeSecretary(s.secretaryId());
             if(ok){
                 loadSecretaries();
-            } else {
+            }else{
                 JOptionPane.showMessageDialog(this, "Failed to remove secretary.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -544,11 +555,11 @@ public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
         c.setBackground(Color.WHITE);
         c.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
         c.setFocusable(false);
-        c.setRenderer(new BasicComboBoxRenderer(){
+        c.setRenderer(new BasicComboBoxRenderer() {
             @Override
             public java.awt.Component getListCellRendererComponent(
-                    javax.swing.JList list, Object value, int index,
-                    boolean isSelected, boolean cellHasFocus){
+                javax.swing.JList list, Object value, int index,
+                boolean isSelected, boolean cellHasFocus){
                 JLabel lbl = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 lbl.setBorder(new EmptyBorder(0, 10, 0, 0));
                 return lbl;
@@ -595,7 +606,9 @@ public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
     @Override
     public void setBounds(int x, int y, int width, int height){
         super.setBounds(x, y, width, height);
-        if(width <= 0 || height <= 0) return;
+        if(width <= 0 || height <= 0){
+            return;
+        }
 
         int tabH = 44;
         tabBar.setBounds(0, 0, width, tabH);
@@ -642,11 +655,18 @@ public class AdminEnrollmentsPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e){
-        if(e.getSource() == btnEnrLoad)       loadEnrollments();
-        else if(e.getSource() == btnEnrEnroll) showEnrollDialog();
-        else if(e.getSource() == btnEnrUnenroll) unenrollSelected();
-        else if(e.getSource() == btnSecLoad)   loadSecretaries();
-        else if(e.getSource() == btnSecAssign) showAssignSecretaryDialog();
-        else if(e.getSource() == btnSecRemove) removeSecretary();
+        if(e.getSource() == btnEnrLoad){
+            loadEnrollments();
+        }else if(e.getSource() == btnEnrEnroll){
+            showEnrollDialog();
+        }else if(e.getSource() == btnEnrUnenroll){
+            unenrollSelected();
+        }else if(e.getSource() == btnSecLoad){
+            loadSecretaries();
+        }else if(e.getSource() == btnSecAssign){
+            showAssignSecretaryDialog();
+        }else if(e.getSource() == btnSecRemove){
+            removeSecretary();
+        }
     }
 }

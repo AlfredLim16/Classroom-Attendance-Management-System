@@ -49,7 +49,7 @@ public class ProfessorSectionsPanel extends JPanel {
         separator.setForeground(Color.BLACK);
         add(separator);
 
-        String[] columns = {"Section", "Course", "Program", "Year Level", "Semester", "Students"};
+        String[] columns = {"Section", "Program", "Year Level", "Semester", "Students"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column){
@@ -93,7 +93,6 @@ public class ProfessorSectionsPanel extends JPanel {
             addSectionRow(
                 ps.section().sectionCode(),
                 ps.section().program().programName(),
-                ps.section().program().programName(),
                 ps.section().yearLevel().getYearLevelName(),
                 ps.semester().semesterName() + " " + ps.semester().schoolYear(),
                 String.valueOf(studentCount)
@@ -110,7 +109,7 @@ public class ProfessorSectionsPanel extends JPanel {
         }
     }
 
-    public void addSectionRow(String section, String course, String program, String yearLevel, String semester, String students){
-        tableModel.addRow(new Object[]{section, course, program, yearLevel, semester, students});
+    public void addSectionRow(String section, String program, String yearLevel, String semester, String students){
+        tableModel.addRow(new Object[]{section, program, yearLevel, semester, students});
     }
 }

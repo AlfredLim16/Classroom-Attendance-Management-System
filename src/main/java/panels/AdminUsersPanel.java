@@ -65,10 +65,7 @@ public class AdminUsersPanel extends JPanel implements ActionListener {
         txtSearch.setFont(new Font("Arial", Font.PLAIN, 14));
         txtSearch.setForeground(new Color(60, 60, 60));
         txtSearch.setBackground(Color.WHITE);
-        txtSearch.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
+        txtSearch.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         txtSearch.setCaretColor(new Color(255, 140, 0));
         add(txtSearch);
 
@@ -208,10 +205,7 @@ public class AdminUsersPanel extends JPanel implements ActionListener {
         JTextField txtUser = new JTextField(isEdit ? user.userName() : "");
         txtUser.setBounds(150, 72, 230, 32);
         txtUser.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtUser.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
+        txtUser.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         dialog.add(txtUser);
 
         JLabel lblPass = new JLabel("Password");

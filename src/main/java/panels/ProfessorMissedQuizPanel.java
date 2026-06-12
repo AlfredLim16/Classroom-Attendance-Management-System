@@ -60,7 +60,7 @@ public class ProfessorMissedQuizPanel extends JPanel implements ActionListener {
         lblTitle.setForeground(new Color(60, 60, 60));
         add(lblTitle);
 
-        lblSubTitle = new JLabel("Description");
+        lblSubTitle = new JLabel("Review missed quiz and lab flags and submit a decision for each student.");
         lblSubTitle.setBounds(40, 50, 400, 30);
         lblSubTitle.setFont(new Font("Arial", Font.PLAIN, 14));
         add(lblSubTitle);
@@ -299,6 +299,17 @@ public class ProfessorMissedQuizPanel extends JPanel implements ActionListener {
             return;
         }
 
+        String remarks = javax.swing.JOptionPane.showInputDialog(
+            this,
+            "Add remarks (optional):",
+            "Remarks",
+            javax.swing.JOptionPane.PLAIN_MESSAGE
+        );
+        if(remarks == null){
+            return;
+        }
+        remarks = remarks.trim().isEmpty() ? null : remarks.trim();
+
         int confirm = JOptionPane.showConfirmDialog(this,
             "Submit decision: " + cmbDecision.getSelectedItem() + "\n\n"
             + "Student: " + flag.student().firstName() + " " + flag.student().lastName() + "\n"
@@ -307,7 +318,7 @@ public class ProfessorMissedQuizPanel extends JPanel implements ActionListener {
 
         if(confirm == JOptionPane.YES_OPTION){
             boolean success = flagService.processMissedQuizFlag(
-                flag.flagId(), decisionType, flag.remarks(), professor);
+                flag.flagId(), decisionType, remarks, professor);
             if(success){
                 JOptionPane.showMessageDialog(this, "Decision submitted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 loadFlags();

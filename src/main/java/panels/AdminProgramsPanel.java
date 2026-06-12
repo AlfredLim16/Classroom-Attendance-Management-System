@@ -62,9 +62,7 @@ public class AdminProgramsPanel extends JPanel implements ActionListener {
         txtSearch.setFont(new Font("Arial", Font.PLAIN, 14));
         txtSearch.setForeground(new Color(60, 60, 60));
         txtSearch.setBackground(Color.WHITE);
-        txtSearch.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)));
+        txtSearch.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         add(txtSearch);
 
         btnSearch = new JButton("Search");
@@ -154,8 +152,7 @@ public class AdminProgramsPanel extends JPanel implements ActionListener {
 
     private void showDialog(Program existing){
         boolean isEdit = existing != null;
-        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this),
-            isEdit ? "Edit Program" : "Add Program");
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), isEdit ? "Edit Program" : "Add Program");
         dialog.setModal(true);
         dialog.setSize(400, 220);
         dialog.setLocationRelativeTo(this);
@@ -189,9 +186,7 @@ public class AdminProgramsPanel extends JPanel implements ActionListener {
         JTextField txtName = new JTextField(isEdit ? existing.programName() : "");
         txtName.setBounds(160, 70, 216, 32);
         txtName.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtName.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)));
+        txtName.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         dialog.add(txtName);
 
         JButton btnCancel = new JButton("Cancel");
@@ -228,15 +223,11 @@ public class AdminProgramsPanel extends JPanel implements ActionListener {
                 success = created != null;
             }
             if(success){
-                JOptionPane.showMessageDialog(dialog,
-                    "Program " + (isEdit ? "updated" : "created") + " successfully!",
-                    "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(dialog, "Program " + (isEdit ? "updated" : "created") + " successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 dialog.dispose();
                 loadPrograms();
             } else {
-                JOptionPane.showMessageDialog(dialog,
-                    "Failed to save. Program name may already exist.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(dialog, "Failed to save. Program name may already exist.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
         dialog.add(btnSave);
@@ -296,18 +287,14 @@ public class AdminProgramsPanel extends JPanel implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Please select a program from the table.", "No Selection", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            int confirm = JOptionPane.showConfirmDialog(this,
-                "Delete program: " + sel.programName() + "?\n\nThis will fail if sections or courses are linked to it.",
-                "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            int confirm = JOptionPane.showConfirmDialog(this, "Delete program: " + sel.programName() + "?\n\nThis will fail if sections or courses are linked to it.", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if(confirm == JOptionPane.YES_OPTION){
                 boolean success = programService.deleteProgram(sel.programId());
                 if(success){
                     JOptionPane.showMessageDialog(this, "Program deleted successfully.", "Deleted", JOptionPane.INFORMATION_MESSAGE);
                     loadPrograms();
                 } else {
-                    JOptionPane.showMessageDialog(this,
-                        "Failed to delete. Program may be linked to sections or courses.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Failed to delete. Program may be linked to sections or courses.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }

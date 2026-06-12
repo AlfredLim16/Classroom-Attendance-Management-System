@@ -51,6 +51,7 @@ panels\AdminSemestersPanel.class
 panels\AdminProfessorAssignmentsPanel$2.class
 services\AttendanceRecordingService.class
 exceptions\UnauthorizedAccessException.class
+panels\ProfessorSchedulePanel$2.class
 dao\ProfessorCourseDAOImpl.class
 exceptions\InvalidSessionException.class
 panels\AdminProfessorsPanel.class
@@ -70,6 +71,8 @@ core\Student$Builder.class
 dao\UserDAOImpl.class
 panels\SecretaryMissedQuizPanel$1.class
 dao\SecretaryDAOImpl.class
+panels\ProfessorSchedulePanel$3.class
+panels\StudentAttendancePanel$2.class
 dao\SchoolEventDAO.class
 panels\AdminEnrollmentsPanel.class
 dao\ClassSessionDAOImpl.class
@@ -156,6 +159,7 @@ lookup\Role.class
 panels\SecretaryExcusePanel.class
 junction\Attendance.class
 panels\AdminSectionsPanel.class
+panels\StudentExcusePanel$2.class
 frames\StudentFrame.class
 charts\DonutChartPanel.class
 services\MissedQuizService.class
@@ -166,6 +170,7 @@ dao\AttendanceDAO.class
 panels\AdminProfessorAssignmentsPanel$1.class
 panels\AdminStudentsPanel$1.class
 dao\SecretaryStudentDAO.class
+services\QuizLabScheduleService.class
 panels\AdminCoursesPanel.class
 dao\ProfessorDAOImpl.class
 frames\LoginFrame.class

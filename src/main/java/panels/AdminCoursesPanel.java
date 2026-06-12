@@ -343,12 +343,17 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
 
                 Program program = programService.getAllPrograms().stream()
                     .filter(p -> p.programName().equals(programName)).findFirst().orElse(null);
-                YearLevel yearLevel = switch (yearName) {
-                    case "1st Year" -> YearLevel.FIRST_YEAR;
-                    case "2nd Year" -> YearLevel.SECOND_YEAR;
-                    case "3rd Year" -> YearLevel.THIRD_YEAR;
-                    case "4th Year" -> YearLevel.FOURTH_YEAR;
-                    default -> YearLevel.FIRST_YEAR;
+                YearLevel yearLevel = switch(yearName){
+                    case "1st Year" ->
+                        YearLevel.FIRST_YEAR;
+                    case "2nd Year" ->
+                        YearLevel.SECOND_YEAR;
+                    case "3rd Year" ->
+                        YearLevel.THIRD_YEAR;
+                    case "4th Year" ->
+                        YearLevel.FOURTH_YEAR;
+                    default ->
+                        YearLevel.FIRST_YEAR;
                 };
                 Semester semester = semesterService.getAllSemesters().stream().filter(s -> s.semesterName().equals(semName)).findFirst().orElse(null);
                 if(program == null || semester == null){
@@ -368,16 +373,16 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
                         .yearLevel(yearLevel)
                         .build();
                     success = courseService.updateCourse(updated);
-                } else {
+                }else{
                     Course created = courseService.createCourse(program, code, name, (byte) units, semester, yearLevel);
                     success = created != null && created.courseId() > 0;
                 }
 
                 if(success){
-                    JOptionPane.showMessageDialog(dialog,"Course " + (isEdit ? "updated" : "created") + " successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(dialog, "Course " + (isEdit ? "updated" : "created") + " successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                     dialog.dispose();
                     loadCourses();
-                } else {
+                }else{
                     JOptionPane.showMessageDialog(dialog, "Failed to save course. Course code may already exist.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }catch(NumberFormatException ex){
@@ -431,13 +436,20 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
         for(Course c : rowCourses){
             boolean match = false;
             switch(filter){
-                case "Course Code" -> match = c.courseCode().toLowerCase().contains(query);
-                case "Course Name" -> match = c.courseName().toLowerCase().contains(query);
-                case "Program" -> match = c.program().programName().toLowerCase().contains(query);
-                case "Units" -> match = String.valueOf(c.units()).contains(query);
-                case "Year Level" -> match = c.yearLevel().getYearLevelName().toLowerCase().contains(query);
-                case "Semester" -> match = c.semester().semesterName().toLowerCase().contains(query);
-                default -> match = c.courseCode().toLowerCase().contains(query) || c.courseName().toLowerCase().contains(query) || c.program().programName().toLowerCase().contains(query) || String.valueOf(c.units()).contains(query) || c.yearLevel().getYearLevelName().toLowerCase().contains(query) || c.semester().semesterName().toLowerCase().contains(query);
+                case "Course Code" ->
+                    match = c.courseCode().toLowerCase().contains(query);
+                case "Course Name" ->
+                    match = c.courseName().toLowerCase().contains(query);
+                case "Program" ->
+                    match = c.program().programName().toLowerCase().contains(query);
+                case "Units" ->
+                    match = String.valueOf(c.units()).contains(query);
+                case "Year Level" ->
+                    match = c.yearLevel().getYearLevelName().toLowerCase().contains(query);
+                case "Semester" ->
+                    match = c.semester().semesterName().toLowerCase().contains(query);
+                default ->
+                    match = c.courseCode().toLowerCase().contains(query) || c.courseName().toLowerCase().contains(query) || c.program().programName().toLowerCase().contains(query) || String.valueOf(c.units()).contains(query) || c.yearLevel().getYearLevelName().toLowerCase().contains(query) || c.semester().semesterName().toLowerCase().contains(query);
             }
             if(match){
                 addCourseRow(c.courseCode(), c.courseName(), c.program().programName(), String.valueOf(c.units()), c.yearLevel().getYearLevelName(), c.semester().semesterName());
@@ -475,7 +487,7 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
                 if(success){
                     JOptionPane.showMessageDialog(this, "Course deleted successfully.", "Deleted", JOptionPane.INFORMATION_MESSAGE);
                     loadCourses();
-                } else {
+                }else{
                     JOptionPane.showMessageDialog(this, "Failed to delete course. Course may be referenced by other records.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }

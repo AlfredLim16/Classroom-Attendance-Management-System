@@ -55,7 +55,7 @@ public class ProfessorExcusePanel extends JPanel implements ActionListener {
         lblTitle.setForeground(new Color(60, 60, 60));
         add(lblTitle);
 
-        lblSubTitle = new JLabel("Description");
+        lblSubTitle = new JLabel("Review and approve or reject excuse letters from your students.");
         lblSubTitle.setBounds(40, 50, 800, 30);
         lblSubTitle.setFont(new Font("Arial", Font.PLAIN, 14));
         add(lblSubTitle);

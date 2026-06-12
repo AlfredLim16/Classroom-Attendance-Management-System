@@ -36,8 +36,7 @@ public class AttendanceService {
         this.policyDAO = new AttendancePolicyDAOImpl(courseDAO);
     }
 
-    public AttendanceService(AttendanceDAO attendanceDAO, AttendancePolicyDAO policyDAO,
-        ClassSessionDAO sessionDAO, StudentDAO studentDAO, UserDAO userDAO){
+    public AttendanceService(AttendanceDAO attendanceDAO, AttendancePolicyDAO policyDAO, ClassSessionDAO sessionDAO, StudentDAO studentDAO, UserDAO userDAO){
         this.attendanceDAO = attendanceDAO;
         this.policyDAO = policyDAO;
         this.sessionDAO = sessionDAO;
@@ -45,9 +44,7 @@ public class AttendanceService {
         this.userDAO = userDAO;
     }
 
-    public void recordAttendance(ClassSession session, Student student,
-        AttendanceStatus status, User recordedBy)
-        throws SQLException, DuplicateEntryException, AttendancePolicyException{
+    public void recordAttendance(ClassSession session, Student student, AttendanceStatus status, User recordedBy) throws SQLException, DuplicateEntryException, AttendancePolicyException{
 
         Attendance attendance = Attendance.builder()
             .session(session)
@@ -60,19 +57,16 @@ public class AttendanceService {
         evaluatePolicy(student, session);
     }
 
-    public void updateAttendance(Attendance attendance)
-        throws SQLException, NotFoundException, AttendancePolicyException{
+    public void updateAttendance(Attendance attendance) throws SQLException, NotFoundException, AttendancePolicyException{
         attendanceDAO.update(attendance);
         evaluatePolicy(attendance.student(), attendance.session());
     }
 
-    public List<Attendance> getStudentAttendanceByCourse(int studentId, int courseId)
-        throws SQLException{
+    public List<Attendance> getStudentAttendanceByCourse(int studentId, int courseId) throws SQLException{
         return attendanceDAO.findByStudentAndCourse(studentId, courseId);
     }
 
-    public List<Attendance> getStudentAttendanceByDateRange(int studentId, LocalDate from, LocalDate to)
-        throws SQLException{
+    public List<Attendance> getStudentAttendanceByDateRange(int studentId, LocalDate from, LocalDate to) throws SQLException{
         return attendanceDAO.findByStudentAndDateRange(studentId, from, to);
     }
 
@@ -88,8 +82,7 @@ public class AttendanceService {
         return sessionDAO.findByDateRange(from, to);
     }
 
-    private void evaluatePolicy(Student student, ClassSession session)
-        throws SQLException, AttendancePolicyException{
+    private void evaluatePolicy(Student student, ClassSession session) throws SQLException, AttendancePolicyException{
 
         int courseId = session.course().courseId();
 
