@@ -1,2 +1,0 @@
-CREATE DATABASE classroom_attendance_management;
-USE classroom_attendance_management;

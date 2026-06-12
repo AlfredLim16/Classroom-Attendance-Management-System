@@ -127,4 +127,34 @@ public class ProfessorSectionDAOImpl implements ProfessorSectionDAO {
         }
         return list;
     }
+
+    @Override
+    public void updateRecordingFlag(int professorId, int sectionId, boolean isProfessorRecording)
+            throws SQLException, NotFoundException {
+        String sql = "UPDATE ProfessorSection SET isProfessorRecording = ? WHERE professorId = ? AND sectionId = ?";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setBoolean(1, isProfessorRecording);
+            ps.setInt(2, professorId);
+            ps.setInt(3, sectionId);
+            if (ps.executeUpdate() == 0) {
+                throw new NotFoundException("ProfessorSection",
+                        "professorId=" + professorId + ", sectionId=" + sectionId);
+            }
+        }
+    }
+
+    @Override
+    public java.util.Optional<ProfessorSection> findByProfessorAndSection(int professorId, int sectionId)
+            throws SQLException {
+        String sql = "SELECT professorSectionId, professorId, sectionId, semesterId, isProfessorRecording "
+                + "FROM ProfessorSection WHERE professorId = ? AND sectionId = ? LIMIT 1";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setInt(1, professorId);
+            ps.setInt(2, sectionId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return java.util.Optional.of(mapRow(rs));
+                return java.util.Optional.empty();
+            }
+        }
+    }
 }

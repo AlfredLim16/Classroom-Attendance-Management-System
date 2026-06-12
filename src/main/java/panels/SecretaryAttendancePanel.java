@@ -3,15 +3,9 @@ package panels;
 import core.Section;
 import core.Student;
 import core.User;
-import junction.Attendance;
-import junction.ClassSession;
-import lookup.AttendanceStatus;
 import dao.SecretaryStudentDAO;
-import services.AttendancePermissionStore;
-import services.AttendanceQueryService;
-import services.AttendanceRecordingService;
-import services.ClassSessionService;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -26,6 +20,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -36,6 +31,14 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import junction.Attendance;
+import junction.ClassSession;
+import lookup.AttendanceStatus;
+import services.AttendancePermissionStore;
+import services.AttendanceQueryService;
+import services.AttendanceRecordingService;
+import services.ClassSessionService;
+import services.ProfessorSectionService;
 
 public class SecretaryAttendancePanel extends JPanel implements ActionListener {
 
@@ -54,6 +57,7 @@ public class SecretaryAttendancePanel extends JPanel implements ActionListener {
     private final AttendanceRecordingService recordingService = new AttendanceRecordingService();
     private final SecretaryStudentDAO secretaryDAO = new SecretaryStudentDAO();
     private final AttendancePermissionStore permStore = AttendancePermissionStore.getInstance();
+    private final ProfessorSectionService professorSectionService = new ProfessorSectionService();
 
     private final Map<Integer, Integer> comboIndexToSessionId = new HashMap<>();
     private final List<Integer> rowStudentIds = new ArrayList<>();
@@ -73,14 +77,13 @@ public class SecretaryAttendancePanel extends JPanel implements ActionListener {
         lblSubTitle.setFont(new Font("Arial", Font.PLAIN, 14));
         add(lblSubTitle);
 
-        // Permission banner — shown when professor has NOT delegated this section
         lblPermissionBanner = new JLabel("⚠  Attendance is currently managed by the Professor. You have view-only access.");
         lblPermissionBanner.setFont(new Font("Arial", Font.BOLD, 13));
         lblPermissionBanner.setForeground(Color.WHITE);
         lblPermissionBanner.setOpaque(true);
         lblPermissionBanner.setBackground(new Color(220, 53, 69));
         lblPermissionBanner.setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 12));
-        lblPermissionBanner.setVisible(false); // hidden by default until section is set
+        lblPermissionBanner.setVisible(false);
         add(lblPermissionBanner);
 
         separator = new JSeparator();
@@ -98,12 +101,11 @@ public class SecretaryAttendancePanel extends JPanel implements ActionListener {
 
         cmbSession.setRenderer(new BasicComboBoxRenderer() {
             @Override
-            public java.awt.Component getListCellRendererComponent(
-                javax.swing.JList list, Object value, int index,
+            public Component getListCellRendererComponent(
+                JList list, Object value, int index,
                 boolean isSelected, boolean cellHasFocus){
 
-                JLabel label = (JLabel) super.getListCellRendererComponent(
-                    list, value, index, isSelected, cellHasFocus);
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 label.setBorder(new EmptyBorder(0, 10, 0, 0));
                 return label;
             }
@@ -183,6 +185,7 @@ public class SecretaryAttendancePanel extends JPanel implements ActionListener {
     public void setSection(Section section){
         this.section = section;
         loadSessions();
+        syncPermissionFromDB();
         refreshPermissionState();
     }
 
@@ -190,9 +193,22 @@ public class SecretaryAttendancePanel extends JPanel implements ActionListener {
         this.currentUser = user;
     }
 
-    /** Refreshes the banner + button state based on the current permission setting. */
+    private void syncPermissionFromDB(){
+        if(section == null){
+            return;
+        }
+        boolean secretaryAllowed = professorSectionService.getRecordingFlagForSection(section.sectionId());
+        if(secretaryAllowed){
+            permStore.grantSecretary(section.sectionId());
+        }else{
+            permStore.revokeSecretary(section.sectionId());
+        }
+    }
+
     private void refreshPermissionState(){
-        if(section == null) return;
+        if(section == null){
+            return;
+        }
         boolean allowed = permStore.isSecretaryAllowed(section.sectionId());
         lblPermissionBanner.setVisible(!allowed);
         boolean enabled = allowed;
@@ -258,10 +274,7 @@ public class SecretaryAttendancePanel extends JPanel implements ActionListener {
 
         // Double-check permission at mark time (professor may have revoked it since the panel loaded)
         if(!permStore.isSecretaryAllowed(section.sectionId())){
-            JOptionPane.showMessageDialog(this,
-                "You are not permitted to record attendance for this section.\n" +
-                "The Professor has not delegated attendance to the Secretary.",
-                "Access Denied", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "You are not permitted to record attendance for this section.\n" + "The Professor has not delegated attendance to the Secretary.", "Access Denied", JOptionPane.WARNING_MESSAGE);
             refreshPermissionState();
             return;
         }
@@ -290,13 +303,23 @@ public class SecretaryAttendancePanel extends JPanel implements ActionListener {
                         .status(status)
                         .recordedBy(currentUser)
                         .build();
-                    attendanceService.updateAttendance(updated);
+                    boolean ok = attendanceService.updateAttendance(updated);
+                    if(!ok){
+                        JOptionPane.showMessageDialog(this,
+                            "Could not update attendance for " + old.student().getFullName() + ".\nThis student may have exceeded the absence limit.",
+                            "Policy Violation", JOptionPane.WARNING_MESSAGE);
+                    }
                 }
             }
         }
 
         if(!newStudentIds.isEmpty()){
-            recordingService.bulkRecordAttendance(sessionId, newStudentIds, status, currentUser);
+            List<String> dropped = recordingService.bulkRecordAttendance(sessionId, newStudentIds, status, currentUser);
+            if(!dropped.isEmpty()){
+                JOptionPane.showMessageDialog(this,
+                    "The following students have exceeded the absence limit:\n" + String.join("\n", dropped),
+                    "Policy Violation", JOptionPane.WARNING_MESSAGE);
+            }
         }
 
         loadStudentsForSelectedSession();
@@ -308,7 +331,6 @@ public class SecretaryAttendancePanel extends JPanel implements ActionListener {
         super.setBounds(x, y, width, height);
         if(width > 0 && height > 0 && scrollPane != null){
             separator.setBounds(40, 80, width - 80, height - 160);
-            // Banner sits between the subtitle and the separator
             if(lblPermissionBanner != null){
                 lblPermissionBanner.setBounds(40, 55, width - 80, 28);
             }

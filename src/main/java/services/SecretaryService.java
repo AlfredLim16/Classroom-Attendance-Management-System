@@ -49,4 +49,37 @@ public class SecretaryService {
             return Collections.emptyList();
         }
     }
+
+    public List<Secretary> getSecretariesBySection(int sectionId){
+        try{
+            return secretaryDAO.findBySection(sectionId);
+        }catch(SQLException e){
+            System.err.println("[SecretaryService] getSecretariesBySection: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    public boolean assignSecretary(Student student, Section section){
+        try{
+            Secretary secretary = Secretary.builder()
+                .student(student)
+                .section(section)
+                .build();
+            secretaryDAO.insert(secretary);
+            return true;
+        }catch(SQLException | exceptions.DuplicateEntryException e){
+            System.err.println("[SecretaryService] assignSecretary: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean removeSecretary(int secretaryId){
+        try{
+            secretaryDAO.delete(secretaryId);
+            return true;
+        }catch(SQLException | NotFoundException e){
+            System.err.println("[SecretaryService] removeSecretary: " + e.getMessage());
+            return false;
+        }
+    }
 }

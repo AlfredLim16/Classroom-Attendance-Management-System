@@ -1,6 +1,9 @@
 package services;
 
 import dao.*;
+import core.Professor;
+import core.Course;
+import core.Semester;
 import junction.ProfessorCourse;
 
 import java.sql.SQLException;
@@ -27,6 +30,31 @@ public class ProfessorCourseService {
         }catch(SQLException e){
             System.err.println("[ProfessorCourseService] getCoursesByProfessor: " + e.getMessage());
             return Collections.emptyList();
+        }
+    }
+
+    public boolean assignCourse(Professor professor, Course course, Semester semester){
+        try{
+            ProfessorCourse pc = ProfessorCourse.builder()
+                .professor(professor)
+                .course(course)
+                .semester(semester)
+                .build();
+            professorCourseDAO.insert(pc);
+            return true;
+        }catch(SQLException | exceptions.DuplicateEntryException e){
+            System.err.println("[ProfessorCourseService] assignCourse: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean unassignCourse(int professorCourseId){
+        try{
+            professorCourseDAO.delete(professorCourseId);
+            return true;
+        }catch(SQLException | exceptions.NotFoundException e){
+            System.err.println("[ProfessorCourseService] unassignCourse: " + e.getMessage());
+            return false;
         }
     }
 }

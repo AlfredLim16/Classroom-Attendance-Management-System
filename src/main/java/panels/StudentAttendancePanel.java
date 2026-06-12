@@ -1,8 +1,5 @@
 package panels;
 
-import core.Student;
-import junction.Attendance;
-import services.AttendanceQueryService;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -16,6 +13,8 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import junction.Attendance;
+import services.AttendanceQueryService;
 
 public class StudentAttendancePanel extends JPanel {
 
@@ -29,7 +28,6 @@ public class StudentAttendancePanel extends JPanel {
     public StudentAttendancePanel(){
         setLayout(null);
         setBackground(Color.WHITE);
-        setBounds(0, 32, 1200, 700);
 
         lblTitle = new JLabel("My Attendance");
         lblTitle.setBounds(40, 20, 300, 30);
@@ -85,10 +83,10 @@ public class StudentAttendancePanel extends JPanel {
         }
     }
 
-    public void loadAttendanceForStudent(int studentId) {
+    public void loadAttendanceForStudent(int studentId){
         tableModel.setRowCount(0);
         List<Attendance> attendances = attendanceService.getAttendancesByStudent(studentId);
-        for (Attendance a : attendances) {
+        for(Attendance a : attendances){
             String date = a.session().sessionDate().toString();
             String course = a.session().course().courseCode() + " - " + a.session().course().courseName();
             String status = a.status().getStatusName();

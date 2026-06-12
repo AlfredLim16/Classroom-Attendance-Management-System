@@ -34,9 +34,10 @@ public class UserManagementService {
     public void createUser(String username, String rawPassword, Role role)
         throws SQLException, DuplicateEntryException{
         UserValidator.validateRawPassword(rawPassword);
+        String hashedPassword = PasswordUtil.hash(rawPassword);
         User user = User.builder()
             .userName(username)
-            .userPassword(rawPassword)
+            .userPassword(hashedPassword)
             .role(role)
             .build();
         userDAO.insert(user);

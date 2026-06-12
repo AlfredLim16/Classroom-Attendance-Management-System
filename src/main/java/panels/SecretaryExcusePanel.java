@@ -18,8 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.JPanel;import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -34,7 +33,7 @@ public class SecretaryExcusePanel extends JPanel implements ActionListener {
 
     private JLabel lblTitle, lblSubTitle;
     private JSeparator separator;
-    private JButton btnView, btnForwardToProfessor;
+    private JButton btnView;
     private JTable excuseTable;
     private DefaultTableModel tableModel;
     private JScrollPane scrollPane;
@@ -54,8 +53,8 @@ public class SecretaryExcusePanel extends JPanel implements ActionListener {
         lblTitle.setForeground(new Color(60, 60, 60));
         add(lblTitle);
 
-        lblSubTitle = new JLabel("Description");
-        lblSubTitle.setBounds(40, 50, 400, 30);
+        lblSubTitle = new JLabel("View excuse letters filed by students in your section.");
+        lblSubTitle.setBounds(40, 50, 500, 30);
         lblSubTitle.setFont(new Font("Arial", Font.PLAIN, 14));
         add(lblSubTitle);
 
@@ -73,17 +72,6 @@ public class SecretaryExcusePanel extends JPanel implements ActionListener {
         btnView.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnView.addActionListener(this);
         add(btnView);
-
-        btnForwardToProfessor = new JButton("Forward to Professor");
-        btnForwardToProfessor.setBounds(170, 100, 160, 36);
-        btnForwardToProfessor.setFont(new Font("Arial", Font.PLAIN, 14));
-        btnForwardToProfessor.setForeground(new Color(100, 100, 100));
-        btnForwardToProfessor.setBackground(Color.WHITE);
-        btnForwardToProfessor.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
-        btnForwardToProfessor.setFocusPainted(false);
-        btnForwardToProfessor.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnForwardToProfessor.addActionListener(this);
-        add(btnForwardToProfessor);
 
         String[] columns = {"Date", "Student", "Course", "Reason", "Status", "Submitted"};
         tableModel = new DefaultTableModel(columns, 0) {
@@ -263,49 +251,6 @@ public class SecretaryExcusePanel extends JPanel implements ActionListener {
         dialog.add(val);
     }
 
-    private void forwardToProfessor(){
-        ExcuseLetter letter = getSelectedLetter();
-        if(letter == null){
-            JOptionPane.showMessageDialog(this, "Please select an excuse letter from the table.", "No Selection", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        String status = letter.status().toString();
-        if(status.equalsIgnoreCase("Approved") || status.equalsIgnoreCase("Rejected")){
-            JOptionPane.showMessageDialog(this,
-                "This excuse letter has already been reviewed.\nCurrent status: " + status,
-                "Already Reviewed", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-
-        int confirm = JOptionPane.showConfirmDialog(this,
-            """
-            Forward this excuse letter to the professor for review?
-            Student: """ + letter.student().firstName() + " " + letter.student().lastName() + "\n"
-            + "Course:  " + letter.course().courseCode() + "\n"
-            + "Date:    " + letter.absentDate(),
-            "Confirm Forward", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-        if(confirm == JOptionPane.YES_OPTION){
-            JOptionPane.showMessageDialog(this,
-                "Excuse letter forwarded successfully to the professor.",
-                "Forwarded", JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
-
-    @Override
-    public void setBounds(int x, int y, int width, int height){
-        super.setBounds(x, y, width, height);
-        if(width > 0 && height > 0 && scrollPane != null){
-            separator.setBounds(40, 80, width - 80, height - 160);
-            scrollPane.setBounds(40, 150, width - 80, height - 180);
-        }
-    }
-
-    public void addExcuseRow(String date, String student, String course, String reason, String status, String submitted){
-        tableModel.addRow(new Object[]{date, student, course, reason, status, submitted});
-    }
-
     @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == btnView){
@@ -316,8 +261,18 @@ public class SecretaryExcusePanel extends JPanel implements ActionListener {
             }
             showDetailDialog(letter);
         }
-        if(e.getSource() == btnForwardToProfessor){
-            forwardToProfessor();
+    }
+
+    @Override
+    public void setBounds(int x, int y, int width, int height){
+        super.setBounds(x, y, width, height);
+        if(width > 0 && height > 0 && scrollPane != null){
+            separator.setBounds(40, 80, width - 80, 1);
+            scrollPane.setBounds(40, 150, width - 80, height - 180);
         }
+    }
+
+    public void addExcuseRow(String date, String student, String course, String reason, String status, String submitted){
+        tableModel.addRow(new Object[]{date, student, course, reason, status, submitted});
     }
 }

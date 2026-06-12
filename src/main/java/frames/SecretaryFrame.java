@@ -56,9 +56,7 @@ public class SecretaryFrame extends JFrame implements ActionListener {
                 }
             },
             () -> {
-                JOptionPane.showMessageDialog(this,
-                    "No secretary record found for user: " + user.userName(),
-                    "Secretary Lookup Failed", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No secretary record found for user: " + user.userName(), "Secretary Lookup Failed", JOptionPane.ERROR_MESSAGE);
             }
         );
     }
@@ -226,28 +224,40 @@ public class SecretaryFrame extends JFrame implements ActionListener {
         }
         if(e.getSource() == btnDashboard){
             SecretaryDashboardPanel panel = new SecretaryDashboardPanel();
-            if(secretary != null) panel.setSection(secretary.section());
+            if(secretary != null){
+                panel.setSection(secretary.section());
+            }
             showPanel(panel);
         }
         if(e.getSource() == btnAttendance){
             SecretaryAttendancePanel panel = new SecretaryAttendancePanel();
-            if(secretary != null) panel.setSection(secretary.section());
-            if(currentUser != null) panel.setCurrentUser(currentUser);
+            if(secretary != null){
+                panel.setSection(secretary.section());
+            }
+            if(currentUser != null){
+                panel.setCurrentUser(currentUser);
+            }
             showPanel(panel);
         }
         if(e.getSource() == btnExcuses){
             SecretaryExcusePanel panel = new SecretaryExcusePanel();
-            if(secretary != null) panel.setSection(secretary.section());
+            if(secretary != null){
+                panel.setSection(secretary.section());
+            }
             showPanel(panel);
         }
         if(e.getSource() == btnMissedQuiz){
             SecretaryMissedQuizPanel panel = new SecretaryMissedQuizPanel();
-            if(secretary != null) panel.setSection(secretary.section());
+            if(secretary != null){
+                panel.setSection(secretary.section());
+            }
             showPanel(panel);
         }
         if(e.getSource() == btnSchedule){
             SecretarySchedulePanel panel = new SecretarySchedulePanel();
-            if(secretary != null) panel.setSection(secretary.section());
+            if(secretary != null){
+                panel.setSection(secretary.section());
+            }
             showPanel(panel);
         }
         if(e.getSource() == btnLogout){

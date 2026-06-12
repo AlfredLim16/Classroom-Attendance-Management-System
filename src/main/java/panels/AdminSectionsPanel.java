@@ -2,7 +2,7 @@ package panels;
 
 import core.Program;
 import core.Section;
-import lookup.YearLevel;
+import dao.SecretaryStudentDAO;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -25,7 +25,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import dao.SecretaryStudentDAO;
+import lookup.YearLevel;
 import services.ProgramService;
 import services.SectionService;
 
@@ -219,10 +219,7 @@ public class AdminSectionsPanel extends JPanel implements ActionListener {
         JTextField txtCode = new JTextField(isEdit ? section.sectionCode() : "");
         txtCode.setBounds(150, y, 230, 32);
         txtCode.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtCode.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
+        txtCode.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         dialog.add(txtCode);
         y += gap;
 
@@ -294,8 +291,7 @@ public class AdminSectionsPanel extends JPanel implements ActionListener {
             String programName = cmbProgram.getSelectedItem().toString();
             String yearName = cmbYear.getSelectedItem().toString();
 
-            Program program = programService.getAllPrograms().stream()
-                .filter(p -> p.programName().equals(programName)).findFirst().orElse(null);
+            Program program = programService.getAllPrograms().stream().filter(p -> p.programName().equals(programName)).findFirst().orElse(null);
             YearLevel yearLevel = switch (yearName) {
                 case "1st Year" -> YearLevel.FIRST_YEAR;
                 case "2nd Year" -> YearLevel.SECOND_YEAR;
@@ -319,9 +315,7 @@ public class AdminSectionsPanel extends JPanel implements ActionListener {
             }
 
             if(success){
-                JOptionPane.showMessageDialog(dialog,
-                    "Section " + (isEdit ? "updated" : "created") + " successfully!",
-                    "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(dialog, "Section " + (isEdit ? "updated" : "created") + " successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 dialog.dispose();
                 loadSections();
             } else {
@@ -378,9 +372,7 @@ public class AdminSectionsPanel extends JPanel implements ActionListener {
                 case "Section Code" -> match = s.sectionCode().toLowerCase().contains(query);
                 case "Program" -> match = s.program().programName().toLowerCase().contains(query);
                 case "Year Level" -> match = s.yearLevel().getYearLevelName().toLowerCase().contains(query);
-                default -> match = s.sectionCode().toLowerCase().contains(query)
-                    || s.program().programName().toLowerCase().contains(query)
-                    || s.yearLevel().getYearLevelName().toLowerCase().contains(query);
+                default -> match = s.sectionCode().toLowerCase().contains(query) || s.program().programName().toLowerCase().contains(query) || s.yearLevel().getYearLevelName().toLowerCase().contains(query);
             }
             if(match){
                 int count = secretaryDAO.findStudentsBySectionId(s.sectionId()).size();
@@ -411,9 +403,7 @@ public class AdminSectionsPanel extends JPanel implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Please select a section from the table.", "No Selection", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            int confirm = JOptionPane.showConfirmDialog(this,
-                "Delete section: " + selected.sectionCode() + "?\n\nThis action cannot be undone.",
-                "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            int confirm = JOptionPane.showConfirmDialog(this, "Delete section: " + selected.sectionCode() + "?\n\nThis action cannot be undone.", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if(confirm == JOptionPane.YES_OPTION){
                 boolean success = sectionService.deleteSection(selected.sectionId());
                 if(success){

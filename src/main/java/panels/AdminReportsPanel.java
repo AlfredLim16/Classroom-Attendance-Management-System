@@ -1,18 +1,19 @@
 package panels;
 
-import services.CourseService;
-import services.SectionService;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.nio.file.Paths;
 import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -26,7 +27,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import services.AttendanceReportService;
 import services.ClassSessionService;
+import services.CourseService;
 import services.ProfessorService;
+import services.SectionService;
 import services.StudentService;
 
 public class AdminReportsPanel extends JPanel implements ActionListener {
@@ -74,8 +77,8 @@ public class AdminReportsPanel extends JPanel implements ActionListener {
         cmbReportType.setFocusable(false);
         cmbReportType.setRenderer(new BasicComboBoxRenderer() {
             @Override
-            public java.awt.Component getListCellRendererComponent(
-                javax.swing.JList list, Object value, int index,
+            public Component getListCellRendererComponent(
+                JList list, Object value, int index,
                 boolean isSelected, boolean cellHasFocus){
                 JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 label.setBorder(new EmptyBorder(0, 10, 0, 0));
@@ -92,8 +95,8 @@ public class AdminReportsPanel extends JPanel implements ActionListener {
         cmbFilter.setFocusable(false);
         cmbFilter.setRenderer(new BasicComboBoxRenderer() {
             @Override
-            public java.awt.Component getListCellRendererComponent(
-                javax.swing.JList list, Object value, int index,
+            public Component getListCellRendererComponent(
+                JList list, Object value, int index,
                 boolean isSelected, boolean cellHasFocus){
                 JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 label.setBorder(new EmptyBorder(0, 10, 0, 0));
@@ -107,10 +110,7 @@ public class AdminReportsPanel extends JPanel implements ActionListener {
         txtDateFrom.setFont(new Font("Arial", Font.PLAIN, 13));
         txtDateFrom.setForeground(new Color(60, 60, 60));
         txtDateFrom.setBackground(Color.WHITE);
-        txtDateFrom.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
+        txtDateFrom.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         add(txtDateFrom);
 
         txtDateTo = new JTextField("2026-05-30");
@@ -118,10 +118,7 @@ public class AdminReportsPanel extends JPanel implements ActionListener {
         txtDateTo.setFont(new Font("Arial", Font.PLAIN, 13));
         txtDateTo.setForeground(new Color(60, 60, 60));
         txtDateTo.setBackground(Color.WHITE);
-        txtDateTo.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
+        txtDateTo.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         add(txtDateTo);
 
         btnGenerate = new JButton("Generate");
@@ -211,35 +208,50 @@ public class AdminReportsPanel extends JPanel implements ActionListener {
 
         for(var session : sessions){
             Map<String, Integer> stats = attendanceReportService.getDailyAttendanceStats(session.sessionId());
-            totalPresent += stats.getOrDefault("Present", 0);
-            totalLate += stats.getOrDefault("Late", 0);
-            totalAbsent += stats.getOrDefault("Absent", 0);
-            totalExcused += stats.getOrDefault("Excused", 0);
+            totalPresent     += stats.getOrDefault("PRESENT", 0);
+            totalLate        += stats.getOrDefault("LATE", 0);
+            totalAbsent      += stats.getOrDefault("ABSENT", 0);
+            totalExcused     += stats.getOrDefault("EXCUSED", 0);
             totalAttendances += stats.values().stream().mapToInt(Integer::intValue).sum();
         }
 
-        double attendanceRate = totalAttendances > 0 ? (double)(totalPresent + totalExcused) / totalAttendances * 100 : 0;
+        double attendanceRate = totalAttendances > 0
+            ? (double)(totalPresent + totalExcused) / totalAttendances * 100 : 0;
 
-        addReportRow("Total Class Sessions", String.valueOf(totalSessions), "All Time", "—");
-        addReportRow("Total Attendance Records", String.valueOf(totalAttendances), "All Time", "—");
-        addReportRow("Present", String.valueOf(totalPresent), "All Time", "—");
-        addReportRow("Late", String.valueOf(totalLate), "All Time", "—");
-        addReportRow("Absent", String.valueOf(totalAbsent), "All Time", "—");
-        addReportRow("Excused", String.valueOf(totalExcused), "All Time", "—");
-        addReportRow("Attendance Rate", String.format("%.1f%%", attendanceRate), "All Time", totalAttendances > 0 ? "+" + String.format("%.1f", attendanceRate - 85) + "%" : "N/A");
+        addReportRow("Total Class Sessions",     String.valueOf(totalSessions),     "All Time", "—");
+        addReportRow("Total Attendance Records", String.valueOf(totalAttendances),  "All Time", "—");
+        addReportRow("Present",                  String.valueOf(totalPresent),      "All Time", "—");
+        addReportRow("Late",                     String.valueOf(totalLate),         "All Time", "—");
+        addReportRow("Absent",                   String.valueOf(totalAbsent),       "All Time", "—");
+        addReportRow("Excused",                  String.valueOf(totalExcused),      "All Time", "—");
+        addReportRow("Attendance Rate",          String.format("%.1f%%", attendanceRate), "All Time",
+            totalAttendances > 0 ? String.format("%+.1f%%", attendanceRate - 85) : "N/A");
     }
 
     private void generateStudentPerformance(){
         tableModel.setRowCount(0);
-        var students = studentService.getAllStudents();
-        int totalStudents = students.size();
-        int atRiskCount = 0;
-        int goodStanding = totalStudents;
+        var students  = studentService.getAllStudents();
+        var sessions  = classSessionService.getAllClassSessions();
+        int total     = students.size();
+        int atRisk    = 0;
+        int totalRecs = 0;
+        int totalPresent = 0, totalExcused = 0;
 
-        addReportRow("Total Students", String.valueOf(totalStudents), "Current Semester", "—");
-        addReportRow("Good Standing", String.valueOf(goodStanding), "Current Semester", "—");
-        addReportRow("At Risk", String.valueOf(atRiskCount), "Current Semester", "—");
-        addReportRow("Average Attendance", "87.3%", "Current Semester", "+3.2%");
+        for(var session : sessions){
+            Map<String, Integer> stats = attendanceReportService.getDailyAttendanceStats(session.sessionId());
+            totalPresent  += stats.getOrDefault("PRESENT", 0);
+            totalExcused  += stats.getOrDefault("EXCUSED", 0);
+            totalRecs     += stats.values().stream().mapToInt(Integer::intValue).sum();
+        }
+
+        double avgAttendance = totalRecs > 0
+            ? (double)(totalPresent + totalExcused) / totalRecs * 100 : 0;
+
+        addReportRow("Total Students",     String.valueOf(total),                        "System", "—");
+        addReportRow("Attendance Rate",    String.format("%.1f%%", avgAttendance),       "All Time", "—");
+        addReportRow("Total Records",      String.valueOf(totalRecs),                    "All Time", "—");
+        addReportRow("Present",            String.valueOf(totalPresent),                 "All Time", "—");
+        addReportRow("Excused",            String.valueOf(totalExcused),                 "All Time", "—");
     }
 
     private void generateProfessorActivity(){
@@ -319,7 +331,7 @@ public class AdminReportsPanel extends JPanel implements ActionListener {
                     csv.append("\n");
                 }
                 java.nio.file.Files.writeString(
-                    java.nio.file.Paths.get("report_export.csv"),
+                    Paths.get("report_export.csv"),
                     csv.toString()
                 );
                 JOptionPane.showMessageDialog(this, "Report exported to report_export.csv", "Export Success", JOptionPane.INFORMATION_MESSAGE);

@@ -22,4 +22,38 @@ public class ProgramService {
             return Collections.emptyList();
         }
     }
+
+    public Program createProgram(String programName){
+        try{
+            Program program = new Program(0, programName);
+            programDAO.insert(program);
+            List<Program> all = programDAO.findAll();
+            return all.stream()
+                .filter(p -> p.programName().equals(programName))
+                .findFirst().orElse(null);
+        }catch(SQLException | exceptions.DuplicateEntryException e){
+            System.err.println("[ProgramService] createProgram: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public boolean updateProgram(Program program){
+        try{
+            programDAO.update(program);
+            return true;
+        }catch(SQLException | exceptions.NotFoundException e){
+            System.err.println("[ProgramService] updateProgram: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean deleteProgram(int programId){
+        try{
+            programDAO.delete(programId);
+            return true;
+        }catch(SQLException | exceptions.NotFoundException e){
+            System.err.println("[ProgramService] deleteProgram: " + e.getMessage());
+            return false;
+        }
+    }
 }

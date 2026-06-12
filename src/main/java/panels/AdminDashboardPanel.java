@@ -77,6 +77,8 @@ public class AdminDashboardPanel extends JPanel {
         donutChart = new DonutChartPanel();
         donutChart.setTitle("Role Breakdown");
         add(donutChart);
+
+        loadStats();
     }
 
     public void setCurrentUser(User user){

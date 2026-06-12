@@ -80,7 +80,7 @@ public class ProfessorMissedQuizPanel extends JPanel implements ActionListener {
         btnViewDetails.addActionListener(this);
         add(btnViewDetails);
 
-        cmbDecision = new JComboBox<>(new String[]{"Select Decision", "Allow Make-up", "Zero Score", "Excused Absence", "Consider as Present"});
+        cmbDecision = new JComboBox<>(new String[]{"Select Decision", "Allow Make-up", "Zero Score", "Excused Absence"});
         cmbDecision.setBounds(180, 100, 180, 36);
         cmbDecision.setFont(new Font("Arial", Font.PLAIN, 14));
         cmbDecision.setBackground(Color.WHITE);

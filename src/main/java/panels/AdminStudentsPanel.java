@@ -4,8 +4,6 @@ import core.Program;
 import core.Section;
 import core.Student;
 import core.User;
-import lookup.Role;
-import lookup.YearLevel;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -29,6 +27,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import lookup.Role;
+import lookup.YearLevel;
 import services.ProgramService;
 import services.SectionService;
 import services.StudentService;
@@ -75,10 +75,7 @@ public class AdminStudentsPanel extends JPanel implements ActionListener {
         txtSearch.setFont(new Font("Arial", Font.PLAIN, 14));
         txtSearch.setForeground(new Color(60, 60, 60));
         txtSearch.setBackground(Color.WHITE);
-        txtSearch.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
+        txtSearch.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         add(txtSearch);
 
         cmbFilter = new JComboBox<>(new String[]{"All Fields", "Student No.", "Name", "Program", "Year", "Section", "Username"});
@@ -226,10 +223,7 @@ public class AdminStudentsPanel extends JPanel implements ActionListener {
         JTextField txtUser = new JTextField(isEdit ? student.user().userName() : "");
         txtUser.setBounds(150, y, 280, 32);
         txtUser.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtUser.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
+        txtUser.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         dialog.add(txtUser);
         y += gap;
 
@@ -243,10 +237,7 @@ public class AdminStudentsPanel extends JPanel implements ActionListener {
             JPasswordField txtPass = new JPasswordField();
             txtPass.setBounds(150, y, 280, 32);
             txtPass.setFont(new Font("Arial", Font.PLAIN, 13));
-            txtPass.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-                BorderFactory.createEmptyBorder(4, 8, 4, 8)
-            ));
+            txtPass.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
             dialog.add(txtPass);
             y += gap;
         }
@@ -260,10 +251,7 @@ public class AdminStudentsPanel extends JPanel implements ActionListener {
         JTextField txtStudNo = new JTextField(isEdit ? student.studentNumber() : "");
         txtStudNo.setBounds(150, y, 280, 32);
         txtStudNo.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtStudNo.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
+        txtStudNo.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         dialog.add(txtStudNo);
         y += gap;
 
@@ -276,10 +264,7 @@ public class AdminStudentsPanel extends JPanel implements ActionListener {
         JTextField txtFname = new JTextField(isEdit ? student.firstName() : "");
         txtFname.setBounds(150, y, 280, 32);
         txtFname.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtFname.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
+        txtFname.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         dialog.add(txtFname);
         y += gap;
 
@@ -292,10 +277,7 @@ public class AdminStudentsPanel extends JPanel implements ActionListener {
         JTextField txtMname = new JTextField(isEdit ? (student.middleName() != null ? student.middleName() : "") : "");
         txtMname.setBounds(150, y, 280, 32);
         txtMname.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtMname.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
+        txtMname.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1),  BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         dialog.add(txtMname);
         y += gap;
 
@@ -308,10 +290,7 @@ public class AdminStudentsPanel extends JPanel implements ActionListener {
         JTextField txtLname = new JTextField(isEdit ? student.lastName() : "");
         txtLname.setBounds(150, y, 280, 32);
         txtLname.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtLname.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
+        txtLname.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         dialog.add(txtLname);
         y += gap;
 

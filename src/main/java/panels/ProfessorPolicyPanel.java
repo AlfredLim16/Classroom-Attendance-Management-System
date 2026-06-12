@@ -50,32 +50,27 @@ public class ProfessorPolicyPanel extends JPanel implements ActionListener {
         setLayout(null);
         setBackground(Color.WHITE);
 
-        // Title
         lblTitle = new JLabel("Attendance Policies");
         lblTitle.setBounds(40, 20, 300, 30);
         lblTitle.setFont(new Font("Arial", Font.PLAIN, 18));
         lblTitle.setForeground(new Color(60, 60, 60));
         add(lblTitle);
 
-        // Description - same as other panels
         lblSubTitle = new JLabel("Manage late thresholds and absence rules for your courses");
         lblSubTitle.setBounds(40, 50, 800, 30);
         lblSubTitle.setFont(new Font("Arial", Font.PLAIN, 14));
         add(lblSubTitle);
 
-        // Separator - same as other panels
         separator = new JSeparator();
         separator.setForeground(Color.BLACK);
         add(separator);
 
-        // Course Label
         lblCourse = new JLabel("Course");
         lblCourse.setBounds(40, 100, 100, 20);
         lblCourse.setFont(new Font("Arial", Font.PLAIN, 13));
         lblCourse.setForeground(new Color(80, 80, 80));
         add(lblCourse);
 
-        // Course Combo
         cmbCourse = new JComboBox<>();
         cmbCourse.setBounds(40, 122, 250, 36);
         cmbCourse.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -84,14 +79,12 @@ public class ProfessorPolicyPanel extends JPanel implements ActionListener {
         cmbCourse.setFocusable(false);
         add(cmbCourse);
 
-        // Late Threshold Label
         lblLate = new JLabel("Late Threshold (mins)");
         lblLate.setBounds(310, 100, 150, 20);
         lblLate.setFont(new Font("Arial", Font.PLAIN, 13));
         lblLate.setForeground(new Color(80, 80, 80));
         add(lblLate);
 
-        // Late Threshold Field
         txtLate = new JTextField();
         txtLate.setBounds(310, 122, 120, 36);
         txtLate.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -103,7 +96,6 @@ public class ProfessorPolicyPanel extends JPanel implements ActionListener {
         ));
         add(txtLate);
 
-        // Lates = Absent Label
         lblLates = new JLabel("Lates = 1 Absent");
         lblLates.setBounds(450, 100, 120, 20);
         lblLates.setFont(new Font("Arial", Font.PLAIN, 13));

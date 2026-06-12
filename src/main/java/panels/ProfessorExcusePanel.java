@@ -294,12 +294,7 @@ public class ProfessorExcusePanel extends JPanel implements ActionListener {
         }
 
         String action = newStatus == ExcuseStatus.APPROVED ? "approve" : "reject";
-        int confirm = JOptionPane.showConfirmDialog(this,
-            "Are you sure you want to " + action + " this excuse letter?\n\n"
-            + "Student: " + letter.student().firstName() + " " + letter.student().lastName() + "\n"
-            + "Course:  " + letter.course().courseCode() + "\n"
-            + "Date:    " + letter.absentDate(),
-            "Confirm " + action.substring(0, 1).toUpperCase() + action.substring(1),
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to " + action + " this excuse letter?\n\n" + "Student: " + letter.student().firstName() + " " + letter.student().lastName() + "\n" + "Course:  " + letter.course().courseCode() + "\n" + "Date:    " + letter.absentDate(), "Confirm " + action.substring(0, 1).toUpperCase() + action.substring(1),
             JOptionPane.YES_NO_OPTION);
 
         if(confirm == JOptionPane.YES_OPTION){

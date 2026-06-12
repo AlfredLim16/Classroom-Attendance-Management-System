@@ -6,14 +6,13 @@ import core.User;
 import dao.*;
 import exceptions.DuplicateEntryException;
 import exceptions.NotFoundException;
-import junction.ExcuseLetter;
-import lookup.ExcuseStatus;
-
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import junction.ExcuseLetter;
+import lookup.ExcuseStatus;
 
 public class ExcuseLetterServiceAdapter {
 
@@ -32,8 +31,8 @@ public class ExcuseLetterServiceAdapter {
     }
 
     public ExcuseLetter submitExcuseLetter(Student student, Course course, LocalDate absentDate,
-                                            String reason, String documentPath,
-                                            ExcuseStatus status, LocalDateTime submittedDate){
+        String reason, String documentPath,
+        ExcuseStatus status, LocalDateTime submittedDate){
         try{
             ExcuseLetter letter = ExcuseLetter.builder()
                 .student(student).course(course).absentDate(absentDate)
@@ -50,9 +49,9 @@ public class ExcuseLetterServiceAdapter {
     }
 
     public boolean reviewExcuseLetter(int excuseId, User reviewedBy,
-                                       ExcuseStatus status, LocalDateTime reviewedDate){
+        ExcuseStatus status, LocalDateTime reviewedDate){
         try{
-            excuseLetterService.reviewExcuseLetter(excuseId, status, reviewedBy);
+            excuseLetterService.reviewExcuseLetter(excuseId, status, reviewedBy, reviewedDate != null ? reviewedDate : LocalDateTime.now());
             return true;
         }catch(SQLException | NotFoundException e){
             System.err.println("[ExcuseLetterServiceAdapter] reviewExcuseLetter: " + e.getMessage());

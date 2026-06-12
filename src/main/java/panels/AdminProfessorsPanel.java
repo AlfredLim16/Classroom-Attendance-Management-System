@@ -2,8 +2,6 @@ package panels;
 
 import core.Professor;
 import core.User;
-import lookup.ProfessorType;
-import lookup.Role;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -27,6 +25,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import lookup.ProfessorType;
+import lookup.Role;
 import services.ProfessorService;
 import services.UserService;
 
@@ -69,10 +69,7 @@ public class AdminProfessorsPanel extends JPanel implements ActionListener {
         txtSearch.setFont(new Font("Arial", Font.PLAIN, 14));
         txtSearch.setForeground(new Color(60, 60, 60));
         txtSearch.setBackground(Color.WHITE);
-        txtSearch.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
+        txtSearch.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         add(txtSearch);
 
         cmbFilter = new JComboBox<>(new String[]{"All Fields", "ID", "Name", "Type", "Username"});
@@ -252,10 +249,7 @@ public class AdminProfessorsPanel extends JPanel implements ActionListener {
         JTextField txtFname = new JTextField(isEdit ? professor.firstName() : "");
         txtFname.setBounds(150, y, 260, 32);
         txtFname.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtFname.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
+        txtFname.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         dialog.add(txtFname);
         y += gap;
 
@@ -268,10 +262,7 @@ public class AdminProfessorsPanel extends JPanel implements ActionListener {
         JTextField txtMname = new JTextField(isEdit ? (professor.middleName() != null ? professor.middleName() : "") : "");
         txtMname.setBounds(150, y, 260, 32);
         txtMname.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtMname.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
+        txtMname.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         dialog.add(txtMname);
         y += gap;
 
@@ -284,10 +275,7 @@ public class AdminProfessorsPanel extends JPanel implements ActionListener {
         JTextField txtLname = new JTextField(isEdit ? professor.lastName() : "");
         txtLname.setBounds(150, y, 260, 32);
         txtLname.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtLname.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
+        txtLname.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         dialog.add(txtLname);
         y += gap;
 
@@ -438,10 +426,7 @@ public class AdminProfessorsPanel extends JPanel implements ActionListener {
                 case "Name" -> match = fullName.contains(query);
                 case "Type" -> match = p.professorType().getProfessorTypeName().toLowerCase().contains(query);
                 case "Username" -> match = p.user().userName().toLowerCase().contains(query);
-                default -> match = String.valueOf(p.professorId()).contains(query)
-                    || fullName.contains(query)
-                    || p.professorType().getProfessorTypeName().toLowerCase().contains(query)
-                    || p.user().userName().toLowerCase().contains(query);
+                default -> match = String.valueOf(p.professorId()).contains(query) || fullName.contains(query) || p.professorType().getProfessorTypeName().toLowerCase().contains(query) || p.user().userName().toLowerCase().contains(query);
             }
             if(match){
                 addProfessorRow(String.valueOf(p.professorId()), p.getFullName(),
@@ -472,9 +457,7 @@ public class AdminProfessorsPanel extends JPanel implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Please select a professor from the table.", "No Selection", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            int confirm = JOptionPane.showConfirmDialog(this,
-                "Delete professor: " + selected.getFullName() + "?\n\nThis action cannot be undone.",
-                "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            int confirm = JOptionPane.showConfirmDialog(this, "Delete professor: " + selected.getFullName() + "?\n\nThis action cannot be undone.", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if(confirm == JOptionPane.YES_OPTION){
                 boolean success = professorService.deleteProfessor(selected.professorId());
                 if(success){

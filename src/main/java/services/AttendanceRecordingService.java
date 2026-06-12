@@ -7,6 +7,7 @@ import exceptions.AttendancePolicyException;
 import exceptions.DuplicateEntryException;
 import exceptions.NotFoundException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -64,20 +65,24 @@ public class AttendanceRecordingService {
         }
     }
 
-    public void bulkRecordAttendance(int sessionId, List<Integer> studentIds, AttendanceStatus status, User recordedBy){
+    public List<String> bulkRecordAttendance(int sessionId, List<Integer> studentIds, AttendanceStatus status, User recordedBy){
+        List<String> droppedStudents = new ArrayList<>();
         try{
             ClassSession session = sessionDAO.findById(sessionId);
             for(int studentId : studentIds){
                 try{
                     Student student = studentDAO.findById(studentId);
                     attendanceService.recordAttendance(session, student, status, recordedBy);
-                }catch(DuplicateEntryException | AttendancePolicyException | NotFoundException e){
+                }catch(AttendancePolicyException e){
+                    droppedStudents.add(e.getMessage());
+                }catch(DuplicateEntryException | NotFoundException e){
                     System.err.println("[AttendanceRecordingService] bulkRecord skip studentId=" + studentId + ": " + e.getMessage());
                 }
             }
         }catch(SQLException | NotFoundException e){
             System.err.println("[AttendanceRecordingService] bulkRecordAttendance: " + e.getMessage());
         }
+        return droppedStudents;
     }
 
     public boolean updateAttendance(Attendance attendance){

@@ -59,8 +59,18 @@ public class ExcuseLetterService {
 
     /**
      * Admin/Professor reviews (approves or rejects) an excuse letter.
+     * Uses the current time as the reviewed date.
      */
     public void reviewExcuseLetter(int excuseId, ExcuseStatus decision, User reviewedBy)
+            throws SQLException, NotFoundException {
+        reviewExcuseLetter(excuseId, decision, reviewedBy, LocalDateTime.now());
+    }
+
+    /**
+     * Admin/Professor reviews (approves or rejects) an excuse letter with an explicit reviewed date.
+     */
+    public void reviewExcuseLetter(int excuseId, ExcuseStatus decision, User reviewedBy,
+                                    LocalDateTime reviewedDate)
             throws SQLException, NotFoundException {
 
         ExcuseLetter existing = excuseLetterDAO.findById(excuseId);
@@ -75,7 +85,7 @@ public class ExcuseLetterService {
                 .status(decision)
                 .reviewedBy(reviewedBy)
                 .submittedDate(existing.submittedDate())
-                .reviewedDate(LocalDateTime.now())
+                .reviewedDate(reviewedDate)
                 .build();
 
         excuseLetterDAO.update(updated);

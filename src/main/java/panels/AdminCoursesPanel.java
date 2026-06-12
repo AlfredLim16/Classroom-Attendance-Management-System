@@ -3,7 +3,6 @@ package panels;
 import core.Course;
 import core.Program;
 import core.Semester;
-import lookup.YearLevel;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -26,6 +25,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import lookup.YearLevel;
 import services.CourseService;
 import services.ProgramService;
 import services.SemesterService;
@@ -70,10 +70,7 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
         txtSearch.setFont(new Font("Arial", Font.PLAIN, 14));
         txtSearch.setForeground(new Color(60, 60, 60));
         txtSearch.setBackground(Color.WHITE);
-        txtSearch.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
+        txtSearch.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         add(txtSearch);
 
         cmbFilter = new JComboBox<>(new String[]{"All Fields", "Course Code", "Course Name", "Program", "Units", "Year Level", "Semester"});
@@ -221,10 +218,7 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
         JTextField txtCode = new JTextField(isEdit ? course.courseCode() : "");
         txtCode.setBounds(150, y, 280, 32);
         txtCode.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtCode.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
+        txtCode.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         dialog.add(txtCode);
         y += gap;
 
@@ -237,10 +231,7 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
         JTextField txtName = new JTextField(isEdit ? course.courseName() : "");
         txtName.setBounds(150, y, 280, 32);
         txtName.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtName.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
+        txtName.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         dialog.add(txtName);
         y += gap;
 
@@ -275,10 +266,7 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
         JTextField txtUnits = new JTextField(isEdit ? String.valueOf(course.units()) : "3");
         txtUnits.setBounds(150, y, 80, 32);
         txtUnits.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtUnits.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
+        txtUnits.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         dialog.add(txtUnits);
 
         JLabel lblYear = new JLabel("Year Level");
@@ -362,9 +350,7 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
                     case "4th Year" -> YearLevel.FOURTH_YEAR;
                     default -> YearLevel.FIRST_YEAR;
                 };
-                Semester semester = semesterService.getAllSemesters().stream()
-                    .filter(s -> s.semesterName().equals(semName)).findFirst().orElse(null);
-
+                Semester semester = semesterService.getAllSemesters().stream().filter(s -> s.semesterName().equals(semName)).findFirst().orElse(null);
                 if(program == null || semester == null){
                     JOptionPane.showMessageDialog(dialog, "Invalid program or semester selected.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -388,9 +374,7 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
                 }
 
                 if(success){
-                    JOptionPane.showMessageDialog(dialog,
-                        "Course " + (isEdit ? "updated" : "created") + " successfully!",
-                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(dialog,"Course " + (isEdit ? "updated" : "created") + " successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                     dialog.dispose();
                     loadCourses();
                 } else {
@@ -453,16 +437,10 @@ public class AdminCoursesPanel extends JPanel implements ActionListener {
                 case "Units" -> match = String.valueOf(c.units()).contains(query);
                 case "Year Level" -> match = c.yearLevel().getYearLevelName().toLowerCase().contains(query);
                 case "Semester" -> match = c.semester().semesterName().toLowerCase().contains(query);
-                default -> match = c.courseCode().toLowerCase().contains(query)
-                    || c.courseName().toLowerCase().contains(query)
-                    || c.program().programName().toLowerCase().contains(query)
-                    || String.valueOf(c.units()).contains(query)
-                    || c.yearLevel().getYearLevelName().toLowerCase().contains(query)
-                    || c.semester().semesterName().toLowerCase().contains(query);
+                default -> match = c.courseCode().toLowerCase().contains(query) || c.courseName().toLowerCase().contains(query) || c.program().programName().toLowerCase().contains(query) || String.valueOf(c.units()).contains(query) || c.yearLevel().getYearLevelName().toLowerCase().contains(query) || c.semester().semesterName().toLowerCase().contains(query);
             }
             if(match){
-                addCourseRow(c.courseCode(), c.courseName(), c.program().programName(),
-                    String.valueOf(c.units()), c.yearLevel().getYearLevelName(), c.semester().semesterName());
+                addCourseRow(c.courseCode(), c.courseName(), c.program().programName(), String.valueOf(c.units()), c.yearLevel().getYearLevelName(), c.semester().semesterName());
             }
         }
     }

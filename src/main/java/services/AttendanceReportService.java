@@ -29,19 +29,14 @@ public class AttendanceReportService {
     public Map<String, Integer> getDailyAttendanceStats(int sessionId){
         Map<String, Integer> stats = new HashMap<>();
         stats.put("PRESENT", 0);
-        stats.put("LATE", 0);
-        stats.put("ABSENT", 0);
+        stats.put("LATE",    0);
+        stats.put("ABSENT",  0);
         stats.put("EXCUSED", 0);
-        stats.put("Present", 0);
-        stats.put("Late", 0);
-        stats.put("Absent", 0);
-        stats.put("Excused", 0);
         try{
             List<Attendance> list = attendanceDAO.findBySession(sessionId);
             for(Attendance a : list){
-                String name = a.status().getStatusName();
-                stats.merge(name, 1, Integer::sum);
-                stats.merge(name.toUpperCase(), 1, Integer::sum);
+                String key = a.status().getStatusName().toUpperCase();
+                stats.merge(key, 1, Integer::sum);
             }
         }catch(SQLException e){
             System.err.println("[AttendanceReportService] getDailyAttendanceStats: " + e.getMessage());

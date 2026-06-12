@@ -74,10 +74,7 @@ public class StudentProfilePanel extends JPanel {
         txtProgram.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         txtProgram.setForeground(new Color(60, 60, 60));
         txtProgram.setBackground(Color.WHITE);
-        txtProgram.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
+        txtProgram.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         txtProgram.setEditable(false);
         add(txtProgram);
 
@@ -92,10 +89,7 @@ public class StudentProfilePanel extends JPanel {
         txtYearLevel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         txtYearLevel.setForeground(new Color(60, 60, 60));
         txtYearLevel.setBackground(Color.WHITE);
-        txtYearLevel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
+        txtYearLevel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         txtYearLevel.setEditable(false);
         add(txtYearLevel);
 
@@ -110,10 +104,7 @@ public class StudentProfilePanel extends JPanel {
         txtSection.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         txtSection.setForeground(new Color(60, 60, 60));
         txtSection.setBackground(Color.WHITE);
-        txtSection.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
+        txtSection.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         txtSection.setEditable(false);
         add(txtSection);
     }

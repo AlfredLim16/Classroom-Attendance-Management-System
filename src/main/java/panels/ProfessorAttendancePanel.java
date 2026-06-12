@@ -94,6 +94,9 @@ public class ProfessorAttendancePanel extends JPanel implements ActionListener {
     private final SecretaryStudentDAO       secretaryDAO      = new SecretaryStudentDAO();
     private final AttendancePermissionStore permStore         = AttendancePermissionStore.getInstance();
 
+    // tracks the professorSectionId row needed for DB flag persistence
+    private final java.util.Map<Integer, Integer> recSectionIdToProfessorId = new java.util.HashMap<>();
+
     // ─────────────────────────────────────────────────────────────────────
     public ProfessorAttendancePanel() {
         setLayout(null);
@@ -379,7 +382,13 @@ public class ProfessorAttendancePanel extends JPanel implements ActionListener {
             cmbRecSession.addItem(display);
             recSessionIndexToId.put(idx++, s.sessionId());
         }
-        // Sync toggle state with selected section
+        // Load the persisted flag from DB into the in-memory store, then refresh button
+        boolean secretaryAllowed = sectionService.getRecordingFlag(professor.professorId(), sectionId);
+        if (secretaryAllowed) {
+            permStore.grantSecretary(sectionId);
+        } else {
+            permStore.revokeSecretary(sectionId);
+        }
         refreshToggleButton(sectionId);
     }
 
@@ -452,13 +461,23 @@ public class ProfessorAttendancePanel extends JPanel implements ActionListener {
                             .status(status)
                             .recordedBy(currentUser)
                             .build();
-                    attendanceQuery.updateAttendance(updated);
+                    boolean ok = attendanceQuery.updateAttendance(updated);
+                    if (!ok) {
+                        JOptionPane.showMessageDialog(this,
+                            "Could not update attendance for " + old.student().getFullName() + ".\nThis student may have exceeded the absence limit.",
+                            "Policy Violation", JOptionPane.WARNING_MESSAGE);
+                    }
                 }
             }
         }
 
         if (!newIds.isEmpty()) {
-            attendanceRecord.bulkRecordAttendance(sessionId, newIds, status, currentUser);
+            List<String> dropped = attendanceRecord.bulkRecordAttendance(sessionId, newIds, status, currentUser);
+            if (!dropped.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                    "The following students have exceeded the absence limit:\n" + String.join("\n", dropped),
+                    "Policy Violation", JOptionPane.WARNING_MESSAGE);
+            }
         }
 
         loadStudentsForRecordSession();
@@ -466,14 +485,24 @@ public class ProfessorAttendancePanel extends JPanel implements ActionListener {
     }
 
     private void handleSecretaryToggle() {
-        if (cmbRecSection.getSelectedIndex() <= 0) {
+        if (professor == null || cmbRecSection.getSelectedIndex() <= 0) {
             JOptionPane.showMessageDialog(this, "Please select a section first.", "No Section Selected", JOptionPane.WARNING_MESSAGE);
             return;
         }
         int sectionId = recSectionIndexToId.get(cmbRecSection.getSelectedIndex());
         boolean newState = permStore.toggle(sectionId);
-        updateToggleAppearance(newState);
 
+        // Persist to DB: isProfessorRecording is the inverse of secretaryAllowed
+        boolean isProfessorRecording = !newState;
+        boolean saved = sectionService.updateRecordingFlag(professor.professorId(), sectionId, isProfessorRecording);
+        if (!saved) {
+            // Revert the in-memory toggle if DB write failed
+            permStore.toggle(sectionId);
+            JOptionPane.showMessageDialog(this, "Failed to save permission change. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        updateToggleAppearance(newState);
         String sectionCode = (String) cmbRecSection.getSelectedItem();
         String msg = newState
                 ? "Secretary is now allowed to take attendance for " + sectionCode + "."

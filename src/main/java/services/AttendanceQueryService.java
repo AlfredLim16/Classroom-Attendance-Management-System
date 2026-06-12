@@ -1,6 +1,7 @@
 package services;
 
 import dao.*;
+import exceptions.AttendancePolicyException;
 import exceptions.NotFoundException;
 import junction.Attendance;
 
@@ -12,6 +13,7 @@ import java.util.Optional;
 public class AttendanceQueryService {
 
     private final AttendanceDAO attendanceDAO;
+    private final AttendanceService attendanceService;
 
     public AttendanceQueryService(){
         ProgramDAO programDAO = new ProgramDAOImpl();
@@ -24,6 +26,7 @@ public class AttendanceQueryService {
         ProfessorDAO professorDAO = new ProfessorDAOImpl(userDAO);
         ClassSessionDAO sessionDAO = new ClassSessionDAOImpl(courseDAO, sectionDAO, professorDAO, schoolEventDAO);
         this.attendanceDAO = new AttendanceDAOImpl(sessionDAO, studentDAO, userDAO);
+        this.attendanceService = new AttendanceService();
     }
 
     public List<Attendance> getAttendancesBySession(int sessionId){
@@ -55,8 +58,11 @@ public class AttendanceQueryService {
 
     public boolean updateAttendance(Attendance attendance){
         try{
-            attendanceDAO.update(attendance);
+            attendanceService.updateAttendance(attendance);
             return true;
+        }catch(AttendancePolicyException e){
+            System.err.println("[AttendanceQueryService] updateAttendance policy violation: " + e.getMessage());
+            return false;
         }catch(SQLException | NotFoundException e){
             System.err.println("[AttendanceQueryService] updateAttendance: " + e.getMessage());
             return false;

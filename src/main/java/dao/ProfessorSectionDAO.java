@@ -15,4 +15,8 @@ public interface ProfessorSectionDAO {
     List<ProfessorSection> findByProfessor(int professorId) throws SQLException;
     List<ProfessorSection> findBySection(int sectionId) throws SQLException;
     List<ProfessorSection> findAll() throws SQLException;
+    /** Persists the isProfessorRecording flag without touching other fields. */
+    void updateRecordingFlag(int professorId, int sectionId, boolean isProfessorRecording) throws SQLException, NotFoundException;
+    /** Returns the first ProfessorSection matching the given professor+section pair, or empty. */
+    java.util.Optional<ProfessorSection> findByProfessorAndSection(int professorId, int sectionId) throws SQLException;
 }

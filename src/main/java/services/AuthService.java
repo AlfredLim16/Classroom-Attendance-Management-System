@@ -28,7 +28,7 @@ public class AuthService {
         try {
             UserValidator.validateRawPassword(password);
             User user = userDAO.findByUsername(username);
-            if (user.userPassword().equals(password)) {
+            if (PasswordUtil.verify(password, user.userPassword())) {
                 this.currentUser = user;
                 return Optional.of(user);
             }

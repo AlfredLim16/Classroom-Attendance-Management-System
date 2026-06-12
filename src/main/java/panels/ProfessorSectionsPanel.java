@@ -40,7 +40,7 @@ public class ProfessorSectionsPanel extends JPanel {
         lblTitle.setForeground(new Color(60, 60, 60));
         add(lblTitle);
 
-        lblSubTitle = new JLabel("Description");
+        lblSubTitle = new JLabel("View the sections assigned to you this semester");
         lblSubTitle.setBounds(40, 50, 800, 30);
         lblSubTitle.setFont(new Font("Arial", Font.PLAIN, 14));
         add(lblSubTitle);
@@ -105,7 +105,7 @@ public class ProfessorSectionsPanel extends JPanel {
     public void setBounds(int x, int y, int width, int height){
         super.setBounds(x, y, width, height);
         if(width > 0 && height > 0 && scrollPane != null){
-            separator.setBounds(40, 80, width - 80, height - 160);
+            separator.setBounds(40, 80, width - 80, 1);
             scrollPane.setBounds(40, 150, width - 80, height - 180);
         }
     }

@@ -12,6 +12,7 @@ dao\SemesterDAO.class
 core\Professor$Builder.class
 core\User$Builder.class
 services\ProgramService.class
+panels\AdminProfessorAssignmentsPanel$3.class
 services\AttendanceQueryService.class
 services\ProfessorSectionService.class
 core\Course.class
@@ -29,6 +30,7 @@ exceptions\DuplicateEntryException.class
 core\Course$Builder.class
 dao\AttendanceDAOImpl.class
 panels\StudentAttendancePanel$1.class
+panels\AdminProgramsPanel.class
 panels\ProfessorSchedulePanel$1.class
 core\User.class
 validations\ExcuseLetterValidator.class
@@ -45,6 +47,8 @@ dao\DatabaseConnection.class
 dao\StudentCourseDAO.class
 services\ClassSessionService.class
 panels\SecretaryDashboardPanel.class
+panels\AdminSemestersPanel.class
+panels\AdminProfessorAssignmentsPanel$2.class
 services\AttendanceRecordingService.class
 exceptions\UnauthorizedAccessException.class
 dao\ProfessorCourseDAOImpl.class
@@ -54,6 +58,7 @@ dao\ProfessorSectionDAO.class
 junction\AttendancePolicy.class
 panels\ProfessorPolicyPanel$1.class
 services\AttendanceReportService.class
+panels\AdminSemestersPanel$1.class
 lookup\MissedQuizStatus.class
 services\SchoolEventService.class
 core\Secretary.class
@@ -66,10 +71,12 @@ dao\UserDAOImpl.class
 panels\SecretaryMissedQuizPanel$1.class
 dao\SecretaryDAOImpl.class
 dao\SchoolEventDAO.class
+panels\AdminEnrollmentsPanel.class
 dao\ClassSessionDAOImpl.class
 dao\SemesterDAOImpl.class
 services\ExcuseLetterServiceAdapter.class
 junction\ProfessorSection.class
+services\PasswordUtil.class
 validations\AttendanceValidator.class
 core\Section.class
 exceptions\AttendancePolicyException.class
@@ -88,6 +95,7 @@ services\SecretaryService.class
 frames\ProfessorFrame.class
 dao\ClassSessionDAO.class
 panels\StudentExcusePanel.class
+services\StudentCourseService.class
 core\SchoolEvent.class
 panels\ProfessorExcusePanel$1.class
 dao\CourseDAOImpl.class
@@ -111,6 +119,7 @@ exceptions\NotFoundException.class
 services\ReportService.class
 dao\ProgramDAOImpl.class
 junction\Attendance$Builder.class
+panels\AdminEnrollmentsPanel$2.class
 dao\AttendancePolicyDAO.class
 dao\ProfessorCourseDAO.class
 junction\ExcuseLetter$Builder.class
@@ -128,6 +137,7 @@ junction\AttendancePolicy$Builder.class
 panels\ProfessorMissedQuizPanel$2.class
 validations\UserValidator.class
 validations\QuizLabScheduleValidator.class
+panels\AdminEnrollmentsPanel$3.class
 junction\ClassSession$Builder.class
 services\AttendanceService.class
 panels\StudentSchedulePanel$1.class
@@ -138,6 +148,7 @@ services\StudentService.class
 panels\ProfessorMissedQuizPanel$1.class
 services\SemesterService.class
 validations\SchoolEventValidator.class
+panels\AdminProgramsPanel$1.class
 dao\MissedQuizFlagDAO.class
 panels\AdminUsersPanel.class
 services\ProfessorCourseService.class
@@ -152,6 +163,7 @@ junction\StudentCourse.class
 services\AttendancePolicyService.class
 panels\ProfessorDashboardPanel.class
 dao\AttendanceDAO.class
+panels\AdminProfessorAssignmentsPanel$1.class
 panels\AdminStudentsPanel$1.class
 dao\SecretaryStudentDAO.class
 panels\AdminCoursesPanel.class
@@ -168,6 +180,7 @@ lookup\ExcuseStatus.class
 dao\ProfessorSectionDAOImpl.class
 dao\ExcuseLetterDAO.class
 dao\StudentDAOImpl.class
+panels\AdminProfessorAssignmentsPanel.class
 panels\ProfessorAttendancePanel$1.class
 services\ClassSessionManagementService.class
 dao\StudentDAO.class
@@ -179,6 +192,7 @@ junction\MissedQuizFlag$Builder.class
 validations\CourseValidator.class
 dao\StudentCourseDAOImpl.class
 panels\AdminCoursesPanel$1.class
+panels\AdminEnrollmentsPanel$1.class
 dao\ProgramDAO.class
 panels\SecretaryAttendancePanel$2.class
 charts\BarChartPanel.class

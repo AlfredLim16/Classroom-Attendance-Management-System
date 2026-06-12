@@ -1,7 +1,6 @@
 package panels;
 
 import core.User;
-import lookup.Role;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -25,6 +24,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import lookup.Role;
 import services.UserService;
 
 public class AdminUsersPanel extends JPanel implements ActionListener {
@@ -72,7 +72,7 @@ public class AdminUsersPanel extends JPanel implements ActionListener {
         txtSearch.setCaretColor(new Color(255, 140, 0));
         add(txtSearch);
 
-        cmbFilter = new JComboBox<>(new String[]{"All Fields", "Username", "Role", "Status"});
+        cmbFilter = new JComboBox<>(new String[]{"All Fields", "Username", "Role"});
         cmbFilter.setBounds(250, 100, 120, 36);
         cmbFilter.setFont(new Font("Arial", Font.PLAIN, 13));
         cmbFilter.setBackground(Color.WHITE);
@@ -124,7 +124,7 @@ public class AdminUsersPanel extends JPanel implements ActionListener {
         btnDelete.addActionListener(this);
         add(btnDelete);
 
-        String[] columns = {"ID", "Username", "Role", "Status"};
+        String[] columns = {"ID", "Username", "Role"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column){
@@ -161,7 +161,7 @@ public class AdminUsersPanel extends JPanel implements ActionListener {
         List<User> users = userService.getAllUsers();
         for(User u : users){
             rowUsers.add(u);
-            addUserRow(String.valueOf(u.userId()), u.userName(), u.role().toString(), "Active");
+            addUserRow(String.valueOf(u.userId()), u.userName(), u.role().toString());
         }
     }
 
@@ -176,14 +176,14 @@ public class AdminUsersPanel extends JPanel implements ActionListener {
     private void showUserDialog(User user, boolean isEdit){
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), isEdit ? "Edit User" : "Add User");
         dialog.setModal(true);
-        dialog.setSize(420, 400);
+        dialog.setSize(420, 350);
         dialog.setLocationRelativeTo(this);
         dialog.setLayout(null);
         dialog.getContentPane().setBackground(Color.WHITE);
         dialog.setResizable(false);
 
         JLabel accent = new JLabel("");
-        accent.setBounds(0, 0, 4, 400);
+        accent.setBounds(0, 0, 4, 350);
         accent.setBackground(new Color(255, 140, 0));
         accent.setOpaque(true);
         dialog.add(accent);
@@ -223,10 +223,7 @@ public class AdminUsersPanel extends JPanel implements ActionListener {
         JPasswordField txtPass = new JPasswordField();
         txtPass.setBounds(150, 118, 230, 32);
         txtPass.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtPass.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
+        txtPass.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1), BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         if(isEdit){
             txtPass.setText("********");
         }
@@ -249,22 +246,8 @@ public class AdminUsersPanel extends JPanel implements ActionListener {
         }
         dialog.add(cmbRole);
 
-        JLabel lblStatus = new JLabel("Status");
-        lblStatus.setBounds(30, 210, 120, 25);
-        lblStatus.setFont(new Font("Arial", Font.BOLD, 13));
-        lblStatus.setForeground(new Color(100, 100, 100));
-        dialog.add(lblStatus);
-
-        JComboBox<String> cmbStatus = new JComboBox<>(new String[]{"Active", "Inactive"});
-        cmbStatus.setBounds(150, 210, 230, 32);
-        cmbStatus.setFont(new Font("Arial", Font.PLAIN, 13));
-        cmbStatus.setBackground(Color.WHITE);
-        cmbStatus.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
-        cmbStatus.setFocusable(false);
-        dialog.add(cmbStatus);
-
         JButton btnCancel = new JButton("Cancel");
-        btnCancel.setBounds(180, 300, 100, 36);
+        btnCancel.setBounds(180, 255, 100, 36);
         btnCancel.setFont(new Font("Arial", Font.PLAIN, 14));
         btnCancel.setForeground(new Color(100, 100, 100));
         btnCancel.setBackground(Color.WHITE);
@@ -275,7 +258,7 @@ public class AdminUsersPanel extends JPanel implements ActionListener {
         dialog.add(btnCancel);
 
         JButton btnSaveDialog = new JButton(isEdit ? "Update" : "Create");
-        btnSaveDialog.setBounds(290, 300, 100, 36);
+        btnSaveDialog.setBounds(290, 255, 100, 36);
         btnSaveDialog.setFont(new Font("Arial", Font.PLAIN, 14));
         btnSaveDialog.setForeground(Color.WHITE);
         btnSaveDialog.setBackground(new Color(255, 140, 0));
@@ -299,21 +282,19 @@ public class AdminUsersPanel extends JPanel implements ActionListener {
                 if(password.equals("********") || password.isEmpty()){
                     User updated = new User(user.userId(), username, user.userPassword(), role);
                     success = userService.updateUser(updated);
-                } else {
+                }else{
                     User updated = new User(user.userId(), username, password, role);
                     success = userService.updateUser(updated);
                 }
-            } else {
+            }else{
                 User created = userService.createUser(username, password, role);
                 success = created != null && created.userId() > 0;
             }
             if(success){
-                JOptionPane.showMessageDialog(dialog,
-                    (isEdit ? "User updated" : "User created") + " successfully!\n\nUsername: " + username + "\nRole: " + role,
-                    "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(dialog, (isEdit ? "User updated" : "User created") + " successfully!\n\nUsername: " + username + "\nRole: " + role, "Success", JOptionPane.INFORMATION_MESSAGE);
                 dialog.dispose();
                 loadUsers();
-            } else {
+            }else{
                 JOptionPane.showMessageDialog(dialog, "Failed to save user. Username may already exist.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -349,8 +330,8 @@ public class AdminUsersPanel extends JPanel implements ActionListener {
         }
     }
 
-    public void addUserRow(String id, String username, String role, String status){
-        tableModel.addRow(new Object[]{id, username, role, status});
+    public void addUserRow(String id, String username, String role){
+        tableModel.addRow(new Object[]{id, username, role});
     }
 
     private void performSearch(){
@@ -364,15 +345,15 @@ public class AdminUsersPanel extends JPanel implements ActionListener {
         for(User u : rowUsers){
             boolean match = false;
             switch(filter){
-                case "Username" -> match = u.userName().toLowerCase().contains(query);
-                case "Role" -> match = u.role().toString().toLowerCase().contains(query);
-                case "Status" -> match = "active".contains(query);
-                default -> match = u.userName().toLowerCase().contains(query)
-                    || u.role().toString().toLowerCase().contains(query)
-                    || String.valueOf(u.userId()).contains(query);
+                case "Username" ->
+                    match = u.userName().toLowerCase().contains(query);
+                case "Role" ->
+                    match = u.role().toString().toLowerCase().contains(query);
+                default ->
+                    match = u.userName().toLowerCase().contains(query) || u.role().toString().toLowerCase().contains(query) || String.valueOf(u.userId()).contains(query);
             }
             if(match){
-                addUserRow(String.valueOf(u.userId()), u.userName(), u.role().toString(), "Active");
+                addUserRow(String.valueOf(u.userId()), u.userName(), u.role().toString());
             }
         }
     }
@@ -399,17 +380,13 @@ public class AdminUsersPanel extends JPanel implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Please select a user from the table.", "No Selection", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            int confirm = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to delete user:\n\n"
-                + "Username: " + selected.userName() + "\n"
-                + "Role: " + selected.role() + "\n\nThis action cannot be undone.",
-                "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete user:\n\n" + "Username: " + selected.userName() + "\n" + "Role: " + selected.role() + "\n\nThis action cannot be undone.", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if(confirm == JOptionPane.YES_OPTION){
                 boolean success = userService.deleteUser(selected.userId());
                 if(success){
                     JOptionPane.showMessageDialog(this, "User '" + selected.userName() + "' deleted successfully.", "Deleted", JOptionPane.INFORMATION_MESSAGE);
                     loadUsers();
-                } else {
+                }else{
                     JOptionPane.showMessageDialog(this, "Failed to delete user. User may be referenced by other records.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }

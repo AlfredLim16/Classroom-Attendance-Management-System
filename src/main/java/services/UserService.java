@@ -22,7 +22,8 @@ public class UserService {
     public User createUser(String username, String password, Role role){
         try{
             UserValidator.validateRawPassword(password);
-            User user = User.builder().userName(username).userPassword(password).role(role).build();
+            String hashedPassword = PasswordUtil.hash(password);
+            User user = User.builder().userName(username).userPassword(hashedPassword).role(role).build();
             userDAO.insert(user);
             return userDAO.findByUsername(username);
         }catch(SQLException | DuplicateEntryException | NotFoundException e){

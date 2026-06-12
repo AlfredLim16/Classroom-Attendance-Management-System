@@ -1,6 +1,7 @@
 package panels;
 
 import core.Semester;
+import frames.AdminFrame;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
@@ -9,9 +10,9 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -24,16 +25,18 @@ public class AdminSettingsPanel extends JPanel implements ActionListener {
 
     private JLabel lblTitle, lblSubTitle;
     private JSeparator separator;
-    private JLabel lblSemester, lblStartDate, lblEndDate, lblLateThreshold, lblAutoDrop, lblEmailNotif;
+    private JLabel lblSemester, lblStartDate, lblEndDate;
     private JComboBox<String> cmbSemester;
-    private JTextField txtStartDate, txtEndDate, txtLateThreshold;
-    private JCheckBox chkAutoDrop, chkEmailNotif;
-    private JButton btnSave, btnReset;
+    private JTextField txtStartDate, txtEndDate;
+    private JButton btnSave, btnLogout;
 
     private final SemesterService semesterService = new SemesterService();
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public AdminSettingsPanel(){
+    private final AdminFrame frame;
+
+    public AdminSettingsPanel(AdminFrame frame){
+        this.frame = frame;
         setLayout(null);
         setBackground(Color.WHITE);
 
@@ -43,23 +46,24 @@ public class AdminSettingsPanel extends JPanel implements ActionListener {
         lblTitle.setForeground(new Color(60, 60, 60));
         add(lblTitle);
 
-        lblSubTitle = new JLabel("Configure global attendance and academic settings");
+        lblSubTitle = new JLabel("Update semester date ranges");
         lblSubTitle.setBounds(40, 50, 500, 30);
         lblSubTitle.setFont(new Font("Arial", Font.PLAIN, 14));
         add(lblSubTitle);
 
         separator = new JSeparator();
-        separator.setForeground(Color.BLACK);
+        separator.setForeground(new Color(220, 220, 220));
         add(separator);
 
-        lblSemester = new JLabel("Current Semester");
-        lblSemester.setBounds(40, 100, 150, 25);
+        lblSemester = new JLabel("Semester");
+        lblSemester.setBounds(40, 100, 120, 25);
         lblSemester.setFont(new Font("Arial", Font.BOLD, 13));
         lblSemester.setForeground(new Color(100, 100, 100));
         add(lblSemester);
 
+        List<Semester> semesters = semesterService.getAllSemesters();
+
         cmbSemester = new JComboBox<>();
-        java.util.List<Semester> semesters = semesterService.getAllSemesters();
         for(Semester s : semesters){
             cmbSemester.addItem(s.semesterName() + " " + s.schoolYear());
         }
@@ -73,14 +77,14 @@ public class AdminSettingsPanel extends JPanel implements ActionListener {
         if(!semesters.isEmpty()){
             Semester first = semesters.get(0);
             txtStartDate = new JTextField(first.startDate().format(DATE_FORMAT));
-            txtEndDate = new JTextField(first.endDate().format(DATE_FORMAT));
+            txtEndDate   = new JTextField(first.endDate().format(DATE_FORMAT));
         } else {
             txtStartDate = new JTextField("2025-08-15");
-            txtEndDate = new JTextField("2025-12-20");
+            txtEndDate   = new JTextField("2025-12-20");
         }
 
         lblStartDate = new JLabel("Start Date");
-        lblStartDate.setBounds(320, 100, 120, 25);
+        lblStartDate.setBounds(320, 100, 100, 25);
         lblStartDate.setFont(new Font("Arial", Font.BOLD, 13));
         lblStartDate.setForeground(new Color(100, 100, 100));
         add(lblStartDate);
@@ -91,12 +95,11 @@ public class AdminSettingsPanel extends JPanel implements ActionListener {
         txtStartDate.setBackground(Color.WHITE);
         txtStartDate.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
+            BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         add(txtStartDate);
 
         lblEndDate = new JLabel("End Date");
-        lblEndDate.setBounds(490, 100, 120, 25);
+        lblEndDate.setBounds(490, 100, 100, 25);
         lblEndDate.setFont(new Font("Arial", Font.BOLD, 13));
         lblEndDate.setForeground(new Color(100, 100, 100));
         add(lblEndDate);
@@ -107,8 +110,7 @@ public class AdminSettingsPanel extends JPanel implements ActionListener {
         txtEndDate.setBackground(Color.WHITE);
         txtEndDate.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
+            BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         add(txtEndDate);
 
         cmbSemester.addActionListener(ev -> {
@@ -120,55 +122,8 @@ public class AdminSettingsPanel extends JPanel implements ActionListener {
             }
         });
 
-        lblLateThreshold = new JLabel("Default Late Threshold (mins)");
-        lblLateThreshold.setBounds(40, 190, 220, 25);
-        lblLateThreshold.setFont(new Font("Arial", Font.BOLD, 13));
-        lblLateThreshold.setForeground(new Color(100, 100, 100));
-        add(lblLateThreshold);
-
-        txtLateThreshold = new JTextField("15");
-        txtLateThreshold.setBounds(40, 218, 120, 36);
-        txtLateThreshold.setFont(new Font("Arial", Font.PLAIN, 14));
-        txtLateThreshold.setForeground(new Color(60, 60, 60));
-        txtLateThreshold.setBackground(Color.WHITE);
-        txtLateThreshold.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
-        add(txtLateThreshold);
-
-        lblAutoDrop = new JLabel("Auto-drop on Excessive Absences");
-        lblAutoDrop.setBounds(40, 280, 250, 25);
-        lblAutoDrop.setFont(new Font("Arial", Font.BOLD, 13));
-        lblAutoDrop.setForeground(new Color(100, 100, 100));
-        add(lblAutoDrop);
-
-        chkAutoDrop = new JCheckBox("Enable automatic student drop notification");
-        chkAutoDrop.setBounds(40, 308, 350, 25);
-        chkAutoDrop.setFont(new Font("Arial", Font.PLAIN, 13));
-        chkAutoDrop.setForeground(new Color(60, 60, 60));
-        chkAutoDrop.setBackground(Color.WHITE);
-        chkAutoDrop.setFocusPainted(false);
-        chkAutoDrop.setSelected(true);
-        add(chkAutoDrop);
-
-        lblEmailNotif = new JLabel("Email Notifications");
-        lblEmailNotif.setBounds(40, 350, 200, 25);
-        lblEmailNotif.setFont(new Font("Arial", Font.BOLD, 13));
-        lblEmailNotif.setForeground(new Color(100, 100, 100));
-        add(lblEmailNotif);
-
-        chkEmailNotif = new JCheckBox("Send email alerts for missed quizzes and absences");
-        chkEmailNotif.setBounds(40, 378, 400, 25);
-        chkEmailNotif.setFont(new Font("Arial", Font.PLAIN, 13));
-        chkEmailNotif.setForeground(new Color(60, 60, 60));
-        chkEmailNotif.setBackground(Color.WHITE);
-        chkEmailNotif.setFocusPainted(false);
-        chkEmailNotif.setSelected(false);
-        add(chkEmailNotif);
-
         btnSave = new JButton("Save Settings");
-        btnSave.setBounds(40, 440, 140, 36);
+        btnSave.setBounds(40, 200, 140, 36);
         btnSave.setFont(new Font("Arial", Font.PLAIN, 14));
         btnSave.setForeground(Color.WHITE);
         btnSave.setBackground(new Color(255, 140, 0));
@@ -178,23 +133,23 @@ public class AdminSettingsPanel extends JPanel implements ActionListener {
         btnSave.addActionListener(this);
         add(btnSave);
 
-        btnReset = new JButton("Reset to Defaults");
-        btnReset.setBounds(200, 440, 150, 36);
-        btnReset.setFont(new Font("Arial", Font.PLAIN, 14));
-        btnReset.setForeground(new Color(100, 100, 100));
-        btnReset.setBackground(Color.WHITE);
-        btnReset.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
-        btnReset.setFocusPainted(false);
-        btnReset.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnReset.addActionListener(this);
-        add(btnReset);
+        btnLogout = new JButton("Logout");
+        btnLogout.setBounds(40, 260, 140, 36);
+        btnLogout.setFont(new Font("Arial", Font.PLAIN, 14));
+        btnLogout.setForeground(Color.WHITE);
+        btnLogout.setBackground(new Color(220, 53, 69));
+        btnLogout.setBorder(null);
+        btnLogout.setFocusPainted(false);
+        btnLogout.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnLogout.addActionListener(this);
+        add(btnLogout);
     }
 
     @Override
     public void setBounds(int x, int y, int width, int height){
         super.setBounds(x, y, width, height);
-        if(width > 0 && height > 0){
-            separator.setBounds(40, 80, width - 80, height - 160);
+        if(width > 0 && height > 0 && separator != null){
+            separator.setBounds(40, 80, width - 80, 1);
         }
     }
 
@@ -203,48 +158,41 @@ public class AdminSettingsPanel extends JPanel implements ActionListener {
         if(e.getSource() == btnSave){
             try{
                 LocalDate startDate = LocalDate.parse(txtStartDate.getText().trim(), DATE_FORMAT);
-                LocalDate endDate = LocalDate.parse(txtEndDate.getText().trim(), DATE_FORMAT);
-                int lateThreshold = Integer.parseInt(txtLateThreshold.getText().trim());
+                LocalDate endDate   = LocalDate.parse(txtEndDate.getText().trim(), DATE_FORMAT);
 
                 if(startDate.isAfter(endDate)){
                     JOptionPane.showMessageDialog(this, "Start date must be before end date.", "Validation", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
+                List<Semester> semesters = semesterService.getAllSemesters();
                 int semIdx = cmbSemester.getSelectedIndex();
-                java.util.List<Semester> semesters = semesterService.getAllSemesters();
-                if(semIdx >= 0 && semIdx < semesters.size()){
-                    Semester old = semesters.get(semIdx);
-                    Semester updated = new Semester(old.semesterId(), old.semesterName(), old.schoolYear(), startDate, endDate);
-                    boolean success = semesterService.updateSemester(updated);
-                    if(success){
-                        JOptionPane.showMessageDialog(this,
-                            "Settings saved successfully:\n" +
-                            "Semester: " + cmbSemester.getSelectedItem() + "\n" +
-                            "Start Date: " + startDate + "\n" +
-                            "End Date: " + endDate + "\n" +
-                            "Late Threshold: " + lateThreshold + " mins\n" +
-                            "Auto-drop: " + (chkAutoDrop.isSelected() ? "Enabled" : "Disabled") + "\n" +
-                            "Email Notifications: " + (chkEmailNotif.isSelected() ? "Enabled" : "Disabled"),
-                            "Settings Saved", JOptionPane.INFORMATION_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Failed to save semester settings.", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
+                if(semIdx < 0 || semIdx >= semesters.size()){
+                    JOptionPane.showMessageDialog(this, "Please select a semester.", "Validation", JOptionPane.WARNING_MESSAGE);
+                    return;
                 }
-            }catch(DateTimeParseException ex){
+
+                Semester old     = semesters.get(semIdx);
+                Semester updated = new Semester(old.semesterId(), old.semesterName(), old.schoolYear(), startDate, endDate);
+                boolean success  = semesterService.updateSemester(updated);
+
+                if(success){
+                    JOptionPane.showMessageDialog(this,
+                        "Saved: " + cmbSemester.getSelectedItem() + "\nStart: " + startDate + "  End: " + endDate,
+                        "Settings Saved", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to save semester settings.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch(DateTimeParseException ex){
                 JOptionPane.showMessageDialog(this, "Invalid date format. Use yyyy-MM-dd.", "Validation", JOptionPane.WARNING_MESSAGE);
-            }catch(NumberFormatException ex){
-                JOptionPane.showMessageDialog(this, "Late threshold must be a valid number.", "Validation", JOptionPane.WARNING_MESSAGE);
             }
-        }
-        if(e.getSource() == btnReset){
-            cmbSemester.setSelectedIndex(0);
-            txtStartDate.setText("2025-08-15");
-            txtEndDate.setText("2025-12-20");
-            txtLateThreshold.setText("15");
-            chkAutoDrop.setSelected(true);
-            chkEmailNotif.setSelected(false);
-            JOptionPane.showMessageDialog(this, "Settings reset to defaults.", "Reset", JOptionPane.INFORMATION_MESSAGE);
+        } else if(e.getSource() == btnLogout){
+            int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to logout?",
+                "Confirm Logout", JOptionPane.YES_NO_OPTION);
+            if(confirm == JOptionPane.YES_OPTION){
+                frame.doLogout();
+            }
         }
     }
 }
